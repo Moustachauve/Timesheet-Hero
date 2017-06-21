@@ -124,6 +124,7 @@ lockedData.load = function (date, callback) {
                 globalSettings.get('defaultHoursToWork', function(err, defaultHoursToWork) {
                     return callback(null, { 
                         hoursToWork: defaultHoursToWork,
+                        version: 1,
                         dates: {}
                     });
                 });

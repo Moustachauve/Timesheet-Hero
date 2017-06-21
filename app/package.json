@@ -1,20 +1,19 @@
 {
-  "name": "timesheethelper",
+  "name": "timesheethero",
+  "productName": "Timesheet Hero",
   "description": "Helps you keep track of your time.",
-  "author": "Christophe Gagnier <admin@cgagnier.ca>",
+  "author": "Christophe Gagnier",
   "private": true,
   "version": "0.1.0",
   "main": "main.js",
   "build": {
-    "appId": "ca.cgagnier.timesheethelper"
+    "appId": "ca.cgagnier.timesheethero"
   },
   "dependencies": {
     "angular": "^1.6.4",
     "angular-animate": "^1.6.4",
     "angular-aria": "^1.6.4",
     "angular-material": "^1.1.4",
-    "auto-updater": "^1.0.2",
-    "electron-cookies": "^1.1.0",
     "electron-squirrel-startup": "^1.0.0",
     "ffi": "^2.2.0",
     "jquery": "~3.2.1",
@@ -24,8 +23,8 @@
     "pretty-ms": "^2.1.0"
   },
   "devDependencies": {
-    "electron-rebuild": "^1.5.11",
-    "electron-prebuilt": "^1.4.13"
+    "electron": "^1.4.13",
+    "electron-rebuild": "^1.5.11"
   },
   "scripts": {
     "start": "electron .",

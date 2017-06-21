@@ -1,23 +1,27 @@
 {
-  "name": "afkcalculator",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "name": "timesheethero",
+  "productName": "Timesheet Hero",
+  "description": "Helps you keep track of your time.",
   "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "electron-builder": "^19.6.3",
-    "electron-prebuilt": "^1.4.13"
+  "private": true,
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Moustachauve/Timesheet-Helper.git"
   },
-  "dependencies": {},
-  "build": {
-        "appId": "ca.cgagnier.timesheethelper",
-        "app-category-type": "public.app-category.productivity",
-        "win": {
-            "iconUrl": "./app/icon.png"
-        }
-    }
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Moustachauve/Timesheet-Helper/issues"
+  },
+  "homepage": "https://github.com/Moustachauve/Timesheet-Helper#readme",
+  "devDependencies": {
+    "electron-squirrel-startup": "^1.0.0",
+    "electron-winstaller": "^2.6.3"
+  },
+  "scripts": {
+    "start": "electron app\\.",
+    "rebuild": ".\\app\\node_modules\\.bin\\electron-rebuild.cmd",
+    "package": "electron-packager ./app --out=packaged --icon=app/icon.ico --overwrite --asar",
+    "installer": "node ./generateWindowsInstaller.js"
+  }
 }
