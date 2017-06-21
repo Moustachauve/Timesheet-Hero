@@ -1,0 +1,50 @@
+body {
+    overflow-y: hidden;
+}
+
+md-input-container .hint {
+    /* Position the hint */
+    position: absolute;
+    left: 2px;
+    right: auto;
+    bottom: 7px;
+    /* Copy styles from ng-messages */
+    font-size: 12px;
+    line-height: 14px;
+    transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2);
+    /* Set our own color */
+    color: grey; 
+}
+
+md-grid-tile {
+    transition: all 300ms ease-out 50ms;
+}
+
+ md-grid-list {
+    height: 100%;
+}
+
+md-card-title-text {
+    width: 100%;
+}
+
+md-card md-card-title md-card-title-text:only-child .md-subhead {
+    padding-top: 0;
+    line-height: initial;
+}
+
+.small-time {
+    margin-top: 6px;
+}
+
+.small-input {
+    width: 130px;
+}
+
+md-input-container {
+    margin-bottom: 0;
+}
+
+md-switch {
+    margin-top: 0;
+}

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html ng-app="afkCalculator" ng-controller="indexController">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Timesheet Helper</title>
+        
+        <link rel="stylesheet" href="../node_modules/angular-material/angular-material.min.css"/>
+        <link rel="stylesheet" href="css/style.css"/>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+        <!--<link rel="stylesheet" type="text/less" href="../less/main.less" />-->
+    </head>
+    <body ng-cloak layout="column">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2 flex md-truncate>Timesheet Helper - {{selectedWeek.format(dateFormat)}}</h2>
+                <md-button class="md-icon-button" aria-label="Settings" ng-click="showAdvanced()">
+                    <i class="material-icons">settings</i>
+                </md-button>
+            </div>
+        </md-toolbar>
+
+        <md-content>
+            <md-content class="md-padding" layout-xs="column" layout="row">
+                <md-card flex-gt-xs="50" layout-align="center center">
+                    <md-card-title>
+                        <md-card-title-text>
+                            <span class="md-headline">Total Time</span>
+                        </md-card-title-text>
+                    </md-card-title>
+                    <md-card-content class="md-display-3">
+                        {{totalWeekly | formatMomentTimeDurationMS}}
+                    </md-card-content>
+                </md-card>
+                <md-card flex-gt-xs="50" layout-align="center center">
+                    <md-card-title>
+                        <md-card-title-text>
+                            <span class="md-headline">Time Left</span>
+                        </md-card-title-text>
+                    </md-card-title>
+                    <md-card-content class="md-display-3">
+                        {{totalLeft | formatMomentTimeDurationMS}}
+                    </md-card-content>
+                </md-card>
+            </md-content>
+
+            <md-content class="md-padding" layout-gt-xs="row" layout="column" layout-wrap>
+                
+                <div ng-repeat="(key, day) in processedData.days" flex="auto">
+                    <md-card>
+                        <md-card-title>
+                            <md-card-title-text>
+                                <div class="md-headline" md-truncate>{{day.title}}</div>
+                                <div class="md-subhead" md-truncate>{{key}}</div>
+                            </md-card-title-text>
+                        </md-card-title>
+                        <md-card-content>
+                            <div class="small-time">
+                                <div class="md-caption">Start</div> 
+                                {{day.time.start | formatMomentTime}}
+                            </div>
+                            <div class="small-time">
+                                <div class="md-caption">Stop</div> 
+                                {{day.time.stop | formatMomentTime}}
+                            </div>
+                            <div class="small-time">
+                                <div class="md-caption">Subtotal</div> 
+                                {{day.total.subtotal | formatMomentTimeDurationMS}}
+                            </div>
+                            <md-input-container class="small-input">
+                                <label>Pause time</label>
+                                <input type="number" step="0.5" ng-model="day.time.pause" ng-disabled="day.isFuture" ng-change="changePauseTime(key)">
+                                <div class="hint">In hours</div>
+                            </md-input-container>
+                            <md-switch ng-model="day.isOff" ng-change="setDayOff(key)">
+                                Day Off: {{ day.isOff ? 'Yes' : 'No' }}
+                            </md-switch>
+                            <div>
+                                <div class="md-caption">Total</div> 
+                                <span class="md-display-1">{{day.total.corrected | formatMomentTimeDurationMS}}</span>
+                            </div>
+                        </md-card-content>
+                    </md-card>
+                </div>
+            </md-content>
+        </md-content>
+    </body>
+    <script src="index.js"></script>
+</html>

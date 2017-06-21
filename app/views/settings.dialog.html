@@ -1,0 +1,56 @@
+<md-dialog aria-label="Settings">
+    <form ng-cloak>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Settings</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="close()">
+                    <i class="material-icons">close</i>
+                </md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <md-tabs md-dynamic-height md-border-bottom>
+                <md-tab label="Current Week Settings">
+                    <md-content class="md-padding">
+                        <div layout-gt-xs="row">
+                            <md-input-container>
+                                <label>Week</label>
+                                <md-datepicker ng-model="selectedWeekCalendar" md-date-filter="isDateSelectionnable" ng-change="setSelectedWeek()"></md-datepicker>
+                            </md-input-container>
+                            <md-input-container>
+                                <label>Hours to work</label>
+                                <input ng-model="hoursToWork" type="number" step="0.5" ng-change="setHoursToWork()">
+                                <div class="hint">In hours</div>
+                            </md-input-container>
+                        </div>
+                    </md-content>
+                </md-tab>
+                <md-tab label="Global Settings">
+                    <md-content class="md-padding">
+                        <div layout-gt-xs="row">
+                            <md-input-container>
+                                <label>Default Pause Time</label>
+                                <input ng-model="globalSettings.defaultTimeOff" type="number" step="0.5" ng-change="setDefaultTimeOff()">
+                                <div class="hint">In hours</div>
+                            </md-input-container>
+                            <md-input-container>
+                                <label>Default Hours to work</label>
+                                <input ng-model="globalSettings.defaultHoursToWork" type="number" step="0.5" ng-change="setDefaultHoursToWork()">
+                                <div class="hint">In hours</div>
+                            </md-input-container>
+                        </div>
+                    </md-content>
+                </md-tab>
+            </md-tabs>
+        </md-dialog-content>
+
+        <md-dialog-actions layout="row">
+            <span flex></span>
+            <md-button ng-click="close()" >
+                Ok
+            </md-button>
+        </md-dialog-actions>
+    </form>
+  </md-dialog>

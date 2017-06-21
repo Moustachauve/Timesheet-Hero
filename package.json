@@ -1,0 +1,23 @@
+{
+  "name": "afkcalculator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron-builder": "^19.6.3",
+    "electron-prebuilt": "^1.4.13"
+  },
+  "dependencies": {},
+  "build": {
+        "appId": "ca.cgagnier.timesheethelper",
+        "app-category-type": "public.app-category.productivity",
+        "win": {
+            "iconUrl": "./app/icon.png"
+        }
+    }
+}
