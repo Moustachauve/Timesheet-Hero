@@ -9,5 +9,4 @@ dist
 #app specific
 app/globalSettings.json
 app/data
-build/*
-packaged/*
+dist/*

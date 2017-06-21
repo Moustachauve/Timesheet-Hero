@@ -6,9 +6,6 @@
   "private": true,
   "version": "0.1.0",
   "main": "main.js",
-  "build": {
-    "appId": "ca.cgagnier.timesheethero"
-  },
   "dependencies": {
     "angular": "^1.6.4",
     "angular-animate": "^1.6.4",
