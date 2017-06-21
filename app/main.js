@@ -1,13 +1,43 @@
 'use strict';
 
-if (require('electron-squirrel-startup')) return;
-
 const path = require("path");
-var timeTracker = new (require('./lib/timeTracker'))();
-var lockedData = require('./lib/lockedData');
-var globalSettings = require('./lib/globalSettings');
-var moment = require('moment');
+const timeTracker = new (require('./lib/timeTracker'))();
+const lockedData = require('./lib/lockedData');
+const globalSettings = require('./lib/globalSettings');
+const moment = require('moment');
+const log = require('electron-log');
 const {app, BrowserWindow, ipcMain, Menu, Tray} = require("electron");
+const {autoUpdater} = require("electron-updater");
+const isDev = require('electron-is-dev');
+
+const updateFeedUrl = "http://timesheethero.cgagnier.ca/";
+
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = 'info';
+
+autoUpdater.on('checking-for-update', () => {
+  console.log('Checking for update...');
+})
+autoUpdater.on('update-available', (ev, info) => {
+  console.log('Update available.');
+})
+autoUpdater.on('update-not-available', (ev, info) => {
+  console.log('Update not available.');
+})
+autoUpdater.on('error', (ev, err) => {
+  console.log('Error in auto-updater.');
+})
+autoUpdater.on('download-progress', (progressObj) => {
+  let log_message = "Download speed: " + progressObj.bytesPerSecond;
+  log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+  log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+  console.log(log_message);
+})
+autoUpdater.on('update-downloaded', (ev, info) => {
+  console.log('Update downloaded; will install in 5 seconds');
+});
+
+
 
 app.on('window-all-closed', function() {
   if (process.platform != 'darwin') {
@@ -16,6 +46,10 @@ app.on('window-all-closed', function() {
 });
 
 app.on('ready', function () {
+    if(!isDev) {
+        autoUpdater.checkForUpdates();
+    }
+
     //Add unlock at start if computer is already unlocked
     if(!timeTracker.isLocked()) {
         lockedData.addData(false, null, function(err, success) {
