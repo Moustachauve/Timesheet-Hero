@@ -21,7 +21,7 @@
   "scripts": {
     "start": "electron app\\.",
     "rebuild": ".\\app\\node_modules\\.bin\\electron-rebuild.cmd",
-    "package": "electron-packager ./app --out=packaged --icon=app/icon.ico --overwrite --asar",
+    "package": "electron-packager ./app --out=packaged --icon=app/icon.ico --overwrite --asar --win32metadata.ProductName=\"Timesheet Hero\"",
     "installer": "node ./generateWindowsInstaller.js"
   }
 }
