@@ -5,6 +5,7 @@ var path = require('path');
 var mkdirp = require('mkdirp');
 var inherits = require('util').inherits;  
 var EventEmitter = require('events').EventEmitter;
+var os = require('os');
 
 var globalSettings = require('./globalSettings');
 
@@ -13,7 +14,7 @@ var globalSettings = require('./globalSettings');
 var lockedData = new EventEmitter();
 module.exports = lockedData;
 
-var folder = 'data';
+var folder = path.join(os.homedir(), 'timesheet-hero/dates');
 
 lockedData.addData = function(isLocked, date, callback) {
     if(!date) {
@@ -121,6 +122,7 @@ lockedData.load = function (date, callback) {
 
         fs.access(filePath, function(err) {
             if(err && err.code === 'ENOENT') {
+                console.log('not found');
                 globalSettings.get('defaultHoursToWork', function(err, defaultHoursToWork) {
                     return callback(null, { 
                         hoursToWork: defaultHoursToWork,
@@ -128,7 +130,11 @@ lockedData.load = function (date, callback) {
                         dates: {}
                     });
                 });
+
+                return;
             }
+
+            console.log('reading...');
             jsonfile.readFile(filePath, function(err, data) {
                 return callback(err, data);
             });

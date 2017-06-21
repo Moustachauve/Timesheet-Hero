@@ -5,13 +5,14 @@ var path = require('path');
 var mkdirp = require('mkdirp');
 var inherits = require('util').inherits;  
 var EventEmitter = require('events').EventEmitter;
+var os = require('os');
 
 'use strict'
 
 var globalSettings = new EventEmitter();
 module.exports = globalSettings;
 
-var folder = './';
+var folder = path.join(os.homedir(), 'timesheet-hero');
 var filename = 'globalSettings.json';
 
 globalSettings.get = function(key, callback) {
