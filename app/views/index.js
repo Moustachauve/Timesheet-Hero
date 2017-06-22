@@ -19,13 +19,17 @@ app.config(function($mdThemingProvider) {
     .dark()
     .primaryPalette('amber')
     .accentPalette('blue');
+  $mdThemingProvider.theme('updateAlert')
+    .backgroundPalette('grey')
+    .primaryPalette('deep-orange')
+    .accentPalette('blue');
 });
 
 app.config(function($mdDateLocaleProvider) {
     $mdDateLocaleProvider.firstDayOfWeek = 1;
 });
 
-app.controller('indexController', ['$scope', '$interval', '$mdDialog', function($scope, $interval, $mdDialog) {
+app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast', function($scope, $interval, $mdDialog, $mdToast) {
 
     var currentWeek = true;
     $scope.dateFormat = DATE_FORMAT;
@@ -288,6 +292,27 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', function(
     ipcRenderer.on('globalSettingsChange', function(event, data) {
         $scope.globalSettings = data;
         $scope.$apply();
+    });
+
+    ipcRenderer.on('updateDownloaded', function(event, info) {
+        console.log('new update', info);
+        var confirm = $mdDialog.confirm()
+            .title('An update is available' + (info && info.releaseName ? ' (' + info.releaseName + ')' : ''))
+            .textContent('Do you want to install the update and restart the app?')
+            .ariaLabel('Update available')
+            .targetEvent(event)
+            .theme('updateAlert')
+            .ok('Please do it')
+            .cancel('Later');
+
+        $mdDialog.show(confirm).then(function() {
+            ipcRenderer.send('installUpdate');
+        }, function() {
+            $mdToast.show($mdToast.simple()
+                .textContent('You will be asked again next time you open the app.')
+                .hideDelay(30000)
+            );
+        });
     });
 
     globalSettings.on('dataChange', function(date, data) {

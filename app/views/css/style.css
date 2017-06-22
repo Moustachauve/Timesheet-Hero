@@ -48,3 +48,9 @@ md-input-container {
 md-switch {
     margin-top: 0;
 }
+
+
+md-toast.md-default-theme .md-toast-content, md-toast .md-toast-content {
+    background-color: #ffc107;
+    color: #000000;
+}

@@ -16,26 +16,27 @@ autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 
 autoUpdater.on('checking-for-update', () => {
-  console.log('Checking for update...');
+    console.log('Checking for update...');
 })
 autoUpdater.on('update-available', (ev, info) => {
-  console.log('Update available.');
+    console.log('Update available.');
 })
 autoUpdater.on('update-not-available', (ev, info) => {
-  console.log('Update not available.');
+    console.log('Update not available.');
 })
 autoUpdater.on('error', (ev, err) => {
-  console.log('Error in auto-updater.');
+    console.log('Error in auto-updater.');
 })
 autoUpdater.on('download-progress', (progressObj) => {
-  let log_message = "Download speed: " + progressObj.bytesPerSecond;
-  log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
-  log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
-  console.log(log_message);
+    let log_message = "Download speed: " + progressObj.bytesPerSecond;
+    log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+    log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+    console.log(log_message);
 })
 autoUpdater.on('update-downloaded', (ev, info) => {
-  console.log('Update downloaded; will install in 5 seconds');
-  //TODO: ask user if they want to restart and install the updates
+    console.log('Update downloaded');
+    window.webContents.send('updateDownloaded', info);
+    //TODO: ask user if they want to restart and install the updates
 });
 
 
@@ -47,10 +48,6 @@ app.on('window-all-closed', function() {
 });
 
 app.on('ready', function () {
-    if(!isDev) {
-        autoUpdater.checkForUpdates();
-    }
-
     //Add unlock at start if computer is already unlocked
     if(!timeTracker.isLocked()) {
         lockedData.addData(false, null, function(err, success) {
@@ -153,4 +150,18 @@ app.on('ready', function () {
     ipcMain.on('notify', (event, title, content) => {
         trayIcon.displayBalloon({title: title, content: content});
     });
+
+    ipcMain.on('installUpdate', (event, title, content) => {
+        console.log('restarting...');
+        autoUpdater.quitAndInstall();
+    });
+
+    if(!isDev) {
+        autoUpdater.checkForUpdates();
+    
+        setInterval(function() {
+            console.log('Checking for updates...');
+            autoUpdater.checkForUpdates();
+        }, 7200000); //2hrs
+    }
 });

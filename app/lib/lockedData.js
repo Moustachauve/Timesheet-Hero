@@ -134,7 +134,6 @@ lockedData.load = function (date, callback) {
                 return;
             }
 
-            console.log('reading...');
             jsonfile.readFile(filePath, function(err, data) {
                 return callback(err, data);
             });
