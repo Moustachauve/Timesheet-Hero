@@ -1,10 +1,14 @@
 {
   "name": "timesheethero",
-  "productName": "Timesheet Hero",
+  "productName": "Timesheet-Hero",
   "description": "Helps you keep track of your time.",
   "author": "",
   "private": true,
   "version": "0.1.1",
+  "build": {
+    "appId": "ca.cgagnier.timesheethero",
+    "artifactName": "${name}-setup-${version}.${ext}"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Moustachauve/Timesheet-Helper.git"

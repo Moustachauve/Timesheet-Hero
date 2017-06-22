@@ -35,6 +35,7 @@ autoUpdater.on('download-progress', (progressObj) => {
 })
 autoUpdater.on('update-downloaded', (ev, info) => {
   console.log('Update downloaded; will install in 5 seconds');
+  //TODO: ask user if they want to restart and install the updates
 });
 
 
