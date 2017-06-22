@@ -15,31 +15,6 @@ const updateFeedUrl = "http://timesheethero.cgagnier.ca/";
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 
-autoUpdater.on('checking-for-update', () => {
-    console.log('Checking for update...');
-})
-autoUpdater.on('update-available', (ev, info) => {
-    console.log('Update available.');
-})
-autoUpdater.on('update-not-available', (ev, info) => {
-    console.log('Update not available.');
-})
-autoUpdater.on('error', (ev, err) => {
-    console.log('Error in auto-updater.');
-})
-autoUpdater.on('download-progress', (progressObj) => {
-    let log_message = "Download speed: " + progressObj.bytesPerSecond;
-    log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
-    log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
-    console.log(log_message);
-})
-autoUpdater.on('update-downloaded', (ev, info) => {
-    console.log('Update downloaded');
-    window.webContents.send('updateDownloaded', info);
-    //TODO: ask user if they want to restart and install the updates
-});
-
-
 
 app.on('window-all-closed', function() {
   if (process.platform != 'darwin') {
@@ -48,14 +23,6 @@ app.on('window-all-closed', function() {
 });
 
 app.on('ready', function () {
-    //Add unlock at start if computer is already unlocked
-    if(!timeTracker.isLocked()) {
-        lockedData.addData(false, null, function(err, success) {
-            if(err) {
-                throw err;
-            }
-        });
-    }
 
     var isSavingDone = false;
     var isSaving = false;
@@ -65,6 +32,39 @@ app.on('ready', function () {
         frame: true,
         icon: path.join(__dirname, 'icon.ico')
     });
+
+    //TODO: Create a module to handle the autoUpdater
+    autoUpdater.on('checking-for-update', () => {
+        console.log('Checking for update...');
+    })
+    autoUpdater.on('update-available', (ev, info) => {
+        console.log('Update available.');
+    })
+    autoUpdater.on('update-not-available', (ev, info) => {
+        console.log('Update not available.');
+    })
+    autoUpdater.on('error', (ev, err) => {
+        console.log('Error in auto-updater.');
+    })
+    autoUpdater.on('download-progress', (progressObj) => {
+        let log_message = "Download speed: " + progressObj.bytesPerSecond;
+        log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+        log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+        console.log(log_message);
+    })
+    autoUpdater.on('update-downloaded', (ev, info) => {
+        console.log('Update downloaded');
+        window.webContents.send('updateDownloaded', info);
+    });
+
+    //Add unlock at start if computer is already unlocked
+    if(!timeTracker.isLocked()) {
+        lockedData.addData(false, null, function(err, success) {
+            if(err) {
+                throw err;
+            }
+        });
+    }
     
     var trayIcon = new Tray(path.join(__dirname, 'icon.ico'));
     trayIcon.setToolTip('Timesheet Hero');
@@ -91,7 +91,6 @@ app.on('ready', function () {
     window.tray = trayIcon;
     window.loadURL(path.join(__dirname, 'views/index.html'));
     window.show();
-    window.openDevTools();
 
     lockedData.on('dataChange', function(date, data) {
         window.webContents.send('lockedDataChange', date.valueOf(), data);
@@ -102,8 +101,9 @@ app.on('ready', function () {
     });
 
     window.on('close', function (event) {
-        if( !app.isQuiting){
+        if(!app.isQuiting){
             event.preventDefault();
+            trayIcon.displayBalloon({title: '', content: 'The app is still running in the background.'});
             window.hide();
             return false;
         } 
