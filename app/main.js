@@ -33,6 +33,8 @@ app.on('ready', function () {
         icon: path.join(__dirname, 'icon.ico')
     });
 
+    window.openDevTools();
+
     //TODO: Create a module to handle the autoUpdater
     autoUpdater.on('checking-for-update', () => {
         console.log('Checking for update...');

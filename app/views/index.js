@@ -31,7 +31,8 @@ app.config(function($mdDateLocaleProvider) {
 
 app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast', function($scope, $interval, $mdDialog, $mdToast) {
 
-    var currentWeek = true;
+    var isCurrentWeekSelected = true;
+    var previousDayToday = moment();
     $scope.dateFormat = DATE_FORMAT;
     $scope.globalSettings = {};
 
@@ -102,9 +103,9 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
         var newDate = moment(week);
         $scope.selectedWeek = newDate.startOf('isoWeek');
 
-        currentWeek = $scope.selectedWeek.isSame(moment().startOf('isoWeek'), 'day');
+        isCurrentWeekSelected = $scope.selectedWeek.isSame(moment().startOf('isoWeek'), 'day');
 
-        if(currentWeek) {
+        if(isCurrentWeekSelected) {
             startInterval();
         } else {
             stopInterval();
@@ -274,6 +275,13 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
             element.isFuture = isFuture;
             if(element.isToday) {
                 isFuture = true;
+
+                if(!element.date.isSame(previousDayToday, 'day')) {
+                    previousDayToday = moment(element.date);
+                    lockedData.load($scope.selectedWeek, function(err, data) {
+                        processWeekInformation(null, data);
+                    });
+                }
 
                 if(!element.notified && element.total.corrected > (hoursToWorkDaily * 60 * 60 * 1000)) {
                     element.notified = true;
