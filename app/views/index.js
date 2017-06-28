@@ -142,7 +142,6 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
                     $scope.processedData.days[today.format($scope.dateFormat)] = {};
                     $scope.processedData.days[today.format($scope.dateFormat)].time = {};
                 }
-                $scope.processedData.days[today.format($scope.dateFormat)].time.stop = today;
                 calculateTotal();
                 refreshDayInfo();
             }
@@ -206,7 +205,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
                 }
 
                 if(day.isToday) {
-                    day.time.stop = moment();
+                    day.time.stop = null;
                 } else {
                     var stop = reversedData.find(function(element) {
                         if(element.lockstate)
@@ -242,10 +241,18 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
                 element.total.corrected = element.total.subtotal;
                 $scope.totalWeekly.add(element.total.corrected);
             }
-            else if(element.time.stop) {
-                element.total.subtotal = element.time.stop.diff(element.time.start);
+            else if(element.time.stop || element.isToday) {
+
+                var stopTime = element.time.stop;
+                if(element.isToday) {
+                    stopTime = moment();
+                } 
+                
+                element.total.subtotal = stopTime.diff(element.time.start);
+
+
                 if(element.total.subtotal > (element.time.pause * 60 * 60 * 1000)) {
-                    element.total.corrected = moment(element.time.stop).subtract(element.time.pause, 'hours').diff(element.time.start);
+                    element.total.corrected = moment(stopTime).subtract(element.time.pause, 'hours').diff(element.time.start);
                 } else {
                     element.total.corrected = element.total.subtotal;
                 }
@@ -333,7 +340,7 @@ app.filter('formatMomentTime', function() {
         if(momentTime) {
             return formatIntTwoDigits(momentTime.hours()) + ":" + formatIntTwoDigits(momentTime.minutes()) + ":" + formatIntTwoDigits(momentTime.seconds());
         }
-        return '00:00:00';
+        return '--:--:--';
     };
 });
 
@@ -344,11 +351,14 @@ app.filter('formatMomentTimeDurationMS', function() {
             var hours = momentTime.hours() + (momentTime.days() * 24);
             return formatIntTwoDigits(hours) + ":" + formatIntTwoDigits(momentTime.minutes()) + ":" + formatIntTwoDigits(momentTime.seconds());
         }
-        return '00:00:00';
+        return '--:--:--';
     };
 });
 
 function formatIntTwoDigits(integer) {
+    if(integer < 0) {
+        return '00';
+    }
     return ("0" + integer).slice(-2);
 }
 
