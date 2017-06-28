@@ -41,8 +41,8 @@ app.on('ready', function () {
     autoUpdater.on('checking-for-update', () => {
         console.log('Checking for update...');
     })
-    autoUpdater.on('update-available', (ev, info) => {
-        console.log('Update available.');
+    autoUpdater.on('update-available', (ev) => {
+        console.log('Update available.', ev);
     })
     autoUpdater.on('update-not-available', (ev, info) => {
         console.log('Update not available.');
@@ -56,9 +56,9 @@ app.on('ready', function () {
         log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
         console.log(log_message);
     })
-    autoUpdater.on('update-downloaded', (ev, info) => {
-        console.log('Update downloaded');
-        window.webContents.send('updateDownloaded', info);
+    autoUpdater.on('update-downloaded', (ev) => {
+        console.log('Update downloaded', ev);
+        window.webContents.send('updateDownloaded', ev);
     });
 
     //Add unlock at start if computer is already unlocked
@@ -160,12 +160,12 @@ app.on('ready', function () {
         autoUpdater.quitAndInstall();
     });
 
-    if(!isDev) {
+    //if(!isDev) {
         autoUpdater.checkForUpdates();
     
         setInterval(function() {
             console.log('Checking for updates...');
             autoUpdater.checkForUpdates();
         }, 7200000); //2hrs
-    }
+    //}
 });

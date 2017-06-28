@@ -21,7 +21,7 @@ app.config(function($mdThemingProvider) {
     .accentPalette('blue');
   $mdThemingProvider.theme('updateAlert')
     .backgroundPalette('grey')
-    .primaryPalette('deep-orange')
+    .primaryPalette('amber')
     .accentPalette('blue');
 });
 
@@ -29,7 +29,7 @@ app.config(function($mdDateLocaleProvider) {
     $mdDateLocaleProvider.firstDayOfWeek = 1;
 });
 
-app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast', function($scope, $interval, $mdDialog, $mdToast) {
+app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast', '$sce', function($scope, $interval, $mdDialog, $mdToast, $sce) {
 
     var isCurrentWeekSelected = true;
     var previousDayToday = moment();
@@ -312,20 +312,28 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     ipcRenderer.on('updateDownloaded', function(event, info) {
         console.log('new update', info);
         var confirm = $mdDialog.confirm()
-            .title('An update is available' + (info && info.releaseName ? ' (' + info.releaseName + ')' : ''))
-            .textContent('Do you want to install the update and restart the app?')
+            .textContent('Do you want to install the update and restart the app?' + info.releaseNotes)
             .ariaLabel('Update available')
             .targetEvent(event)
-            .theme('updateAlert')
-            .ok('Please do it')
-            .cancel('Later');
+            .theme();
 
-        $mdDialog.show(confirm).then(function() {
+        $scope.updateInfo = info;
+        $scope.updateInfo.releaseNotes = $sce.trustAsHtml(info.releaseNotes);
+
+        $mdDialog.show({
+            controller: UpdateAvailableController,
+            templateUrl: 'updateAvailable.dialog.html',
+            scope: $scope,
+            preserveScope: true,
+            parent: angular.element(document.body),
+            targetEvent: event,
+            clickOutsideToClose: false,
+        }).then(function() {
             ipcRenderer.send('installUpdate');
         }, function() {
             $mdToast.show($mdToast.simple()
                 .textContent('You will be asked again next time you open the app.')
-                .hideDelay(30000)
+                .hideDelay(3000)
             );
         });
     });
@@ -369,6 +377,24 @@ function SettingsController($scope, $mdDialog) {
     $scope.close = function() {
         $mdDialog.hide();
     };
+
+    $scope.isDateSelectionnable = function(date) {
+        //return $scope.datesAvailable.indexOf(date);
+        var day = moment(date);
+        return !!$scope.datesAvailable[day.format(DATE_FORMAT)];
+    }
+}
+
+/* UPDATE AVAILABLE */
+
+function UpdateAvailableController($scope, $mdDialog) {
+    $scope.cancel = function() {
+        $mdDialog.cancel();
+    };
+
+    $scope.confirm = function() {
+        $mdDialog.hide();
+    }
 
     $scope.isDateSelectionnable = function(date) {
         //return $scope.datesAvailable.indexOf(date);
