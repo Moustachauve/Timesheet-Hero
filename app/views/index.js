@@ -241,7 +241,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
                 element.total.corrected = element.total.subtotal;
                 $scope.totalWeekly.add(element.total.corrected);
             }
-            else if(element.time.stop || element.isToday) {
+            else if(element.time.start && (element.time.stop || element.isToday)) {
 
                 var stopTime = element.time.stop;
                 if(element.isToday) {
@@ -283,11 +283,17 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
             if(element.isToday) {
                 isFuture = true;
 
+                // We are starting a new day!
                 if(!element.date.isSame(previousDayToday, 'day')) {
+                    // We are starting a new week!!
+                    if(previousDayToday.isoWeek() !== element.date.isoWeek()) {
+                        $scope.setSelectedWeek(previousDayToday);
+                    } else {
+                        lockedData.load($scope.selectedWeek, function(err, data) {
+                            processWeekInformation(null, data);
+                        });
+                    }
                     previousDayToday = moment(element.date);
-                    lockedData.load($scope.selectedWeek, function(err, data) {
-                        processWeekInformation(null, data);
-                    });
                 }
 
                 if(!element.notified && element.total.corrected > (hoursToWorkDaily * 60 * 60 * 1000)) {
