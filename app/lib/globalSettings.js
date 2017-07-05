@@ -6,6 +6,7 @@ var mkdirp = require('mkdirp');
 var inherits = require('util').inherits;  
 var EventEmitter = require('events').EventEmitter;
 var os = require('os');
+const isDev = require('electron-is-dev');
 
 'use strict'
 
@@ -13,7 +14,7 @@ var globalSettings = new EventEmitter();
 module.exports = globalSettings;
 
 var folder = path.join(os.homedir(), 'timesheet-hero');
-var filename = 'globalSettings.json';
+var filename = 'globalSettings' + (isDev ? '-dev' : '') + '.json';
 
 globalSettings.get = function(key, callback) {
     getFilePath(function(err, filePath) {

@@ -72,15 +72,35 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     startInterval();
 
     $scope.changePauseTime = function(key) {
+        $scope.processedData.days[key].time.pause = $scope.selectedDayDetails.day.time.pause;
         ipcRenderer.send('setTimeOff', $scope.processedData.days[key].date.valueOf(), $scope.processedData.days[key].time.pause);
         calculateTotal();
         refreshDayInfo();
+        $scope.selectedDayDetails = {key: key, day: $scope.processedData.days[key]};
     }
 
     $scope.setDayOff = function(key) {
+        $scope.processedData.days[key].isOff = $scope.selectedDayDetails.day.isOff;
         ipcRenderer.send('setDayOff', $scope.processedData.days[key].date.valueOf(), $scope.processedData.days[key].isOff);
         calculateTotal();
         refreshDayInfo();
+        $scope.selectedDayDetails = {key: key, day: $scope.processedData.days[key]};
+    }
+
+    $scope.setOverrideStartTime = function(key) {
+        $scope.processedData.days[key].overrideStartTime = $scope.selectedDayDetails.day.overrideStartTime;
+        ipcRenderer.send('setOverrideStartTime', $scope.processedData.days[key].date.valueOf(), $scope.processedData.days[key].overrideStartTime);
+        calculateTotal();
+        refreshDayInfo();
+        $scope.selectedDayDetails = {key: key, day: $scope.processedData.days[key]};
+    }
+
+    $scope.setOverrideStopTime = function(key) {
+        $scope.processedData.days[key].overrideStopTime = $scope.selectedDayDetails.day.overrideStopTime;
+        ipcRenderer.send('setOverrideStopTime', $scope.processedData.days[key].date.valueOf(), $scope.processedData.days[key].overrideStopTime);
+        calculateTotal();
+        refreshDayInfo();
+        $scope.selectedDayDetails = {key: key, day: $scope.processedData.days[key]};
     }
 
     $scope.showAdvanced = function(ev) {
@@ -95,6 +115,22 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
             fullscreen: true
         });
     };
+
+    $scope.showDayDetails = function(key, day) {
+        $scope.selectedDayDetails = {key: key, day: day};
+        console.log($scope.selectedDayDetails);
+
+        $mdDialog.show({
+            templateUrl: 'dayDetails.dialog.html',
+            controller: DayDetailsController,
+            scope: $scope,
+            preserveScope: true,
+            parent: angular.element(document.body),
+            targetEvent: null,
+            clickOutsideToClose: true,
+            fullscreen: true
+        });
+    }
 
     $scope.setSelectedWeek = function(week) {
         if(!week) {
@@ -215,8 +251,16 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
                         day.time.stop = moment(stop.time, 'HH:mm:ss');
                     }
                 }
-
                 day.time.pause = data.dates[arrayKey].timeOff;
+
+                if(data.dates[arrayKey].overrideStartTime) {
+                    day.time.start = moment(data.dates[arrayKey].overrideStartTime, 'HH:mm:ss');
+                    day.overrideStartTime = data.dates[arrayKey].overrideStartTime;
+                }
+                if(data.dates[arrayKey].overrideStopTime) {
+                    day.time.stop = moment(data.dates[arrayKey].overrideStopTime, 'HH:mm:ss');
+                    day.overrideStopTime = data.dates[arrayKey].overrideStopTime;
+                }
             }
             
             currentDate.add(1, 'day');
@@ -244,7 +288,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
             else if(element.time.start && (element.time.stop || element.isToday)) {
 
                 var stopTime = element.time.stop;
-                if(element.isToday) {
+                if(element.isToday && !element.overrideStopTime) {
                     stopTime = moment();
                 } 
                 
@@ -369,6 +413,17 @@ app.filter('formatMomentTimeDurationMS', function() {
     };
 });
 
+app.filter('formatHours', function() {
+    return function (hours) {
+        if(hours) {
+            var momentTime = moment.duration(hours, 'hours');
+            var hours = momentTime.hours() + (momentTime.days() * 24);
+            return formatIntTwoDigits(hours) + ":" + formatIntTwoDigits(momentTime.minutes()) + ":" + formatIntTwoDigits(momentTime.seconds());
+        }
+        return '--:--:--';
+    };
+});
+
 function formatIntTwoDigits(integer) {
     if(integer < 0) {
         return '00';
@@ -401,6 +456,20 @@ function UpdateAvailableController($scope, $mdDialog) {
     $scope.confirm = function() {
         $mdDialog.hide();
     }
+
+    $scope.isDateSelectionnable = function(date) {
+        //return $scope.datesAvailable.indexOf(date);
+        var day = moment(date);
+        return !!$scope.datesAvailable[day.format(DATE_FORMAT)];
+    }
+}
+
+/* DAY DETAILS */
+
+function DayDetailsController($scope, $mdDialog) {
+    $scope.close = function() {
+        $mdDialog.hide();
+    };
 
     $scope.isDateSelectionnable = function(date) {
         //return $scope.datesAvailable.indexOf(date);

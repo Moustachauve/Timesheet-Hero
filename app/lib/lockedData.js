@@ -6,6 +6,7 @@ var mkdirp = require('mkdirp');
 var inherits = require('util').inherits;  
 var EventEmitter = require('events').EventEmitter;
 var os = require('os');
+const isDev = require('electron-is-dev');
 
 var globalSettings = require('./globalSettings');
 
@@ -116,6 +117,58 @@ lockedData.setDayOff = function(date, isOff, callback) {
     });
 }
 
+lockedData.setOverrideStartTime = function(date, time, callback) {
+    if(!date) {
+        callback('No date!');
+    }
+
+    getFilePath(date, function(err, filePath) {
+        if(err) { return callback(err); }
+
+        lockedData.load(date, function(err, data) {
+            if(err) { return callback(err); }
+        
+            var arrayKey = date.format('YYYY-MM-DD');
+            if(!data.dates[arrayKey]) {
+                data.dates[arrayKey] = getDefaultObject();
+            } 
+
+            data.dates[arrayKey].overrideStartTime = time;
+            
+            saveData(date, data, function (err) {
+                if(err) { return callback(err); }
+                return callback(null, true)
+            });
+        });
+    });
+}
+
+lockedData.setOverrideStopTime = function(date, time, callback) {
+    if(!date) {
+        callback('No date!');
+    }
+
+    getFilePath(date, function(err, filePath) {
+        if(err) { return callback(err); }
+
+        lockedData.load(date, function(err, data) {
+            if(err) { return callback(err); }
+        
+            var arrayKey = date.format('YYYY-MM-DD');
+            if(!data.dates[arrayKey]) {
+                data.dates[arrayKey] = getDefaultObject();
+            } 
+
+            data.dates[arrayKey].overrideStopTime = time;
+            
+            saveData(date, data, function (err) {
+                if(err) { return callback(err); }
+                return callback(null, true)
+            });
+        });
+    });
+}
+
 lockedData.load = function (date, callback) {
     getFilePath(date, function(err, filePath) {
         if(err) { return callback(err); }
@@ -153,6 +206,8 @@ lockedData.getAvailableDates = function(callback) {
             }
 
             files[i] = files[i].slice(0, -5);
+            files[i] = files[i].replace('-dev', '');
+
             var date = moment(files[i]);
             if(date.isValid()) {
                 dates.push(date);
@@ -185,7 +240,7 @@ function saveData(date, data, callback) {
 }
 
 function getFilePath(date, callback) {
-    var filename = moment(date).startOf('isoWeek').format('YYYY-MM-DD') + '.json';
+    var filename = moment(date).startOf('isoWeek').format('YYYY-MM-DD') + (isDev ? '-dev' : '') + '.json';
     mkdirp(folder, function(err) {
         if(err) { return callback(err); }
 

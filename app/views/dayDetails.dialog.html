@@ -1,0 +1,48 @@
+<!--<div class="md-subhead">{{selectedDayDetails.key}}</div>-->
+<md-dialog aria-label="Day Details">
+    <md-toolbar ng-cloak>
+        <div class="md-toolbar-tools">
+            <h2>{{selectedDayDetails.day.title}}</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="close()">
+                <i class="material-icons">close</i>
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <md-dialog-content class="md-dialog-content" ng-cloak>
+            
+            <div class="md-subhead">Time off</div>
+            <div layout="row" layout-align="space-between center">
+                <md-input-container class="small-input" flex>
+                    <label>Pause Time</label>
+                    <input type="number" step="0.5" ng-model="selectedDayDetails.day.time.pause" ng-disabled="selectedDayDetails.day.isFuture" ng-change="changePauseTime(selectedDayDetails.key)">
+                    <div class="hint">In hours</div>
+                </md-input-container>
+                <md-switch ng-model="selectedDayDetails.day.isOff" ng-change="setDayOff(selectedDayDetails.key)" flex>
+                    Day Off: {{ selectedDayDetails.day.isOff ? 'Yes' : 'No' }}
+                </md-switch>
+            </div>
+
+            <div class="md-subhead">Override Time</div>
+            <div layout="row" layout-align="space-between center">
+                <md-input-container class="small-input" flex>
+                    <label>Start Time</label>
+                    <input type="text" ng-model="selectedDayDetails.day.overrideStartTime" ng-change="setOverrideStartTime(selectedDayDetails.key)">
+                    <div class="hint">In hours</div>
+                </md-input-container>
+                <md-input-container class="small-input" flex>
+                    <label>Stop Time</label>
+                    <input type="text" ng-model="selectedDayDetails.day.overrideStopTime" ng-change="setOverrideStopTime(selectedDayDetails.key)">
+                    <div class="hint">In hours</div>
+                </md-input-container>
+            </div>
+
+    </md-dialog-content>
+    <md-dialog-actions layout="row" ng-cloak>
+        <span flex></span>
+        <md-button ng-click="close()" >
+            Ok
+        </md-button>
+    </md-dialog-actions>
+</md-dialog>

@@ -34,11 +34,29 @@ md-card md-card-title md-card-title-text:only-child .md-subhead {
 }
 
 .small-time {
-    margin-top: 6px;
+    padding: 5px;
+}
+
+.card-overflow {
+    position: absolute;
+    right: 0;
+    top: 10px;
+}
+
+.total-container {
+    margin-top: 15px;
 }
 
 .small-input {
     width: 130px;
+}
+
+md-card md-card-title {
+    padding-top: 15px;
+}
+
+md-card {
+    position: relative;
 }
 
 md-input-container {
@@ -53,4 +71,8 @@ md-switch {
 md-toast.md-default-theme .md-toast-content, md-toast .md-toast-content {
     background-color: #ffc107;
     color: #000000;
+}
+
+div.md-headline.day-title {
+    padding-right: 26px;
 }

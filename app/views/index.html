@@ -49,33 +49,38 @@
                 <div ng-repeat="(key, day) in processedData.days" flex="auto">
                     <md-card>
                         <md-card-title>
+                            <md-button class="md-icon-button card-overflow" aria-label="Settings" ng-click="showDayDetails(key, day)">
+                                <i class="material-icons">more_vert</i>
+                            </md-button>
                             <md-card-title-text>
-                                <div class="md-headline" md-truncate>{{day.title}}</div>
+                                <div class="md-headline day-title" md-truncate>
+                                    {{day.title}}
+                                </div>
                                 <div class="md-subhead" md-truncate>{{key}}</div>
                             </md-card-title-text>
                         </md-card-title>
                         <md-card-content>
-                            <div class="small-time">
-                                <div class="md-caption">Start</div> 
-                                {{day.time.start | formatMomentTime}}
+                            <div layout="row" layout-align="space-between center">
+                                <div class="small-time" flex>
+                                    <div class="md-caption">Start</div> 
+                                    {{day.time.start | formatMomentTime}}
+                                </div>
+                                <div class="small-time" flex>
+                                    <div class="md-caption">Stop</div> 
+                                    {{day.time.stop | formatMomentTime}}
+                                </div>
                             </div>
-                            <div class="small-time">
-                                <div class="md-caption">Stop</div> 
-                                {{day.time.stop | formatMomentTime}}
+                            <div layout="row" layout-align="space-between center">
+                                <div class="small-time" flex>
+                                    <div class="md-caption">Pause</div> 
+                                    {{day.time.pause | formatHours}}
+                                </div>
+                                <div class="small-time" flex>
+                                    <div class="md-caption">Subtotal</div> 
+                                    {{day.total.subtotal | formatMomentTimeDurationMS}}
+                                </div>
                             </div>
-                            <div class="small-time">
-                                <div class="md-caption">Subtotal</div> 
-                                {{day.total.subtotal | formatMomentTimeDurationMS}}
-                            </div>
-                            <md-input-container class="small-input">
-                                <label>Pause time</label>
-                                <input type="number" step="0.5" ng-model="day.time.pause" ng-disabled="day.isFuture" ng-change="changePauseTime(key)">
-                                <div class="hint">In hours</div>
-                            </md-input-container>
-                            <md-switch ng-model="day.isOff" ng-change="setDayOff(key)">
-                                Day Off: {{ day.isOff ? 'Yes' : 'No' }}
-                            </md-switch>
-                            <div>
+                            <div class="total-container">
                                 <div class="md-caption">Total</div> 
                                 <span class="md-display-1">{{day.total.corrected | formatMomentTimeDurationMS}}</span>
                             </div>

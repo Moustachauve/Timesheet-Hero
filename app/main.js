@@ -151,6 +151,20 @@ app.on('ready', function () {
         });
     });
 
+    ipcMain.on('setOverrideStartTime', (event, dateMs, time) => {
+        var date = moment(dateMs);
+        lockedData.setOverrideStartTime(date, time, function(err) {
+            if(err) { throw err; }
+        });
+    });
+
+    ipcMain.on('setOverrideStopTime', (event, dateMs, time) => {
+        var date = moment(dateMs);
+        lockedData.setOverrideStopTime(date, time, function(err) {
+            if(err) { throw err; }
+        });
+    });
+
     ipcMain.on('notify', (event, title, content) => {
         trayIcon.displayBalloon({title: title, content: content});
     });
