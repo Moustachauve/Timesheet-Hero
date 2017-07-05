@@ -15,6 +15,22 @@ const updateFeedUrl = "http://timesheethero.cgagnier.ca/";
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 
+var window = null;
+
+// prevent multiple instances
+var shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) {
+    if (window) {
+        if (window.isMinimized()) window.restore();
+        window.focus();
+    }
+});
+
+if (shouldQuit) {
+    console.log('App is already running...');   
+    app.quit();
+    return;
+}
+
 
 app.on('window-all-closed', function() {
   if (process.platform != 'darwin') {
@@ -28,7 +44,7 @@ app.on('ready', function () {
     var isSaving = false;
 
     timeTracker.start();
-    var window = new BrowserWindow({
+    window = new BrowserWindow({
         frame: true,
         icon: path.join(__dirname, 'icon.ico')
     });
