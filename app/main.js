@@ -76,15 +76,6 @@ app.on('ready', function () {
         console.log('Update downloaded', ev);
         window.webContents.send('updateDownloaded', ev);
     });
-
-    //Add unlock at start if computer is already unlocked
-    if(!timeTracker.isLocked()) {
-        lockedData.addData(false, null, function(err, success) {
-            if(err) {
-                throw err;
-            }
-        });
-    }
     
     var trayIcon = new Tray(path.join(__dirname, 'icon.ico'));
     trayIcon.setToolTip('Timesheet Hero');
