@@ -1,5 +1,6 @@
 var ffi = require('ffi');
 var ref = require('ref');
+var edge = require('electron-edge');
 
 var lockedData = require('./lockedData');
 
@@ -17,41 +18,49 @@ module.exports = function() {
     var self = this;
     var lastLockTime = 0;
     var lockCheckInterval;
+    var unsubscribeCsharpEvent;
 
     this.start = function() {
-        if(lockCheckInterval) {
-            clearInterval(lockCheckInterval);
-        }
-        lockCheckInterval = setInterval(function () {
-            if(self.isLocked()) {
-                if(!lastLockTime) {
-                    lastLockTime = new Date();
-                    console.log(lastLockTime.toLocaleString());
-                    lockedData.addData(true, null, function(err, success) {
-                        if(err) {
-                            throw err;
-                        }
-                    });
+        csharpEventSessionSwitch({event_handler: function(data, b) {
+            var isSessionLocked = data == 'SessionLock';
+            console.log('SessionLock', isSessionLocked);
+            
+            lockedData.addData(isSessionLocked, null, function(err, success) {
+                if(err) {
+                    throw err;
                 }
-            } else {
-                if(lastLockTime) {
-                    lastLockTime = 0;
-                    lockedData.addData(false, null, function(err, success) {
-                        if(err) {
-                            throw err;
-                        }
-                    });
-                }
-            }
-        }, 1000);
+
+                console.log('success?', success);
+            });
+        }}, function (err, unsubscribe) {
+            if(err) throw err;
+
+            console.log('subscribed!');
+            unsubscribeCsharpEvent = unsubscribe;
+        });
     }
     this.stop = function() {
-        if(lockCheckInterval) {
-            clearInterval(lockCheckInterval);
+        if(unsubscribeCsharpEvent) {
+            unsubscribeCsharpEvent();
         }
     }
 
-    this.isLocked = function() {
-        return !user32.OpenInputDesktop(0, false, 0x0001);
-    }
+    var csharpEventSessionSwitch = edge.func(function() {/*
+        async (dynamic input) =>
+        {
+            var eventHandler = new Microsoft.Win32.SessionSwitchEventHandler((object sender, Microsoft.Win32.SessionSwitchEventArgs e) => {
+                ((Func<object,Task<object>>)input.event_handler)(e.Reason.ToString());
+            });
+
+            Microsoft.Win32.SystemEvents.SessionSwitch += eventHandler;
+
+            // Return a function that can be used by Node.js to 
+            // unsubscribe from the event source.
+            return (Func<object,Task<object>>)(async (dynamic data) => {
+                Microsoft.Win32.SystemEvents.SessionSwitch -= eventHandler;
+                eventHandler = null;
+                return null;
+            });
+        };
+    */});
 }

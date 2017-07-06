@@ -98,6 +98,7 @@ app.on('ready', function () {
         { 
             label: 'Quit', click:  function() {
                 app.isQuiting = true;
+                timeTracker.stop();
                 app.quit();
             } 
         }
@@ -139,6 +140,7 @@ app.on('ready', function () {
                 }
                 isSaving = false;
                 isSavingDone = true;
+                timeTracker.stop();
                 app.quit();
             });
         } 
@@ -190,12 +192,12 @@ app.on('ready', function () {
         autoUpdater.quitAndInstall();
     });
 
-    //if(!isDev) {
+    if(!isDev) {
         autoUpdater.checkForUpdates();
     
         setInterval(function() {
             console.log('Checking for updates...');
             autoUpdater.checkForUpdates();
         }, 7200000); //2hrs
-    //}
+    }
 });
