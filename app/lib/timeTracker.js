@@ -1,23 +1,11 @@
-var ffi = require('ffi');
-var ref = require('ref');
 var edge = require('electron-edge');
 
 var lockedData = require('./lockedData');
 
 'use strict'
 
-// user32.dll
-var intPtr = ref.refType('int');
-var user32 = new ffi.Library('user32', {
-'OpenInputDesktop': [
-    'int', [ 'int32', 'bool', 'int32' ]
-]
-});
-
 module.exports = function() {
     var self = this;
-    var lastLockTime = 0;
-    var lockCheckInterval;
     var unsubscribeCsharpEvent;
 
     this.start = function() {

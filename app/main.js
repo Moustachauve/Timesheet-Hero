@@ -12,6 +12,7 @@ const isDev = require('electron-is-dev');
 
 const updateFeedUrl = "http://timesheethero.cgagnier.ca/";
 
+console.log = log.info;
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 

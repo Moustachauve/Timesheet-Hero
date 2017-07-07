@@ -1,4 +1,3 @@
-const $ = require('jquery');
 require('angular');
 require('angular-material');
 require('angular-animate');
