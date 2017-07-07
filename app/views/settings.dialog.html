@@ -41,6 +41,10 @@
                                 <div class="hint">In hours</div>
                             </md-input-container>
                         </div>
+                        <div layout-gt-xs="row">
+                            <md-button class="md-raised md-primary" ng-click="checkForUpdates()" ng-disabled="checkingForUpdates">{{checkingForUpdates ? 'Checking...' : 'Check for updates'}}</md-button>
+                        </div>
+                        <span ng-if="showUpdateNotAvailable">You have the latest version installed!</span>
                     </md-content>
                 </md-tab>
             </md-tabs>

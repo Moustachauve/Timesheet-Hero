@@ -14,7 +14,11 @@
         <md-toolbar>
             <div class="md-toolbar-tools">
                 <h2 flex md-truncate>Timesheet Hero - {{selectedWeek.format(dateFormat)}}</h2>
-                <md-button class="md-icon-button" aria-label="Settings" ng-click="showAdvanced()">
+                <md-button class="md-icon-button md-accent md-hue-2" aria-label="New update available" ng-click="showUpdateDialog($event)" ng-if="isUpdateAvailable">
+                    <md-tooltip md-direction="bottom">A new update is ready to be installed</md-tooltip>
+                    <i class="material-icons">announcement</i>
+                </md-button>
+                <md-button class="md-icon-button" aria-label="Settings" ng-click="showSettings($event)">
                     <i class="material-icons">settings</i>
                 </md-button>
             </div>

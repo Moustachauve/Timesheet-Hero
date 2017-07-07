@@ -47,6 +47,11 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
 
     var intervalRefresh;
 
+    $scope.isUpdateAvailable = false;
+    $scope.checkingForUpdates = false;
+    $scope.showUpdateNotAvailable = false;
+    var shouldShowUpdateDialog = true;
+
     globalSettings.load(function(err, data) {
         $scope.globalSettings = data;
         lockedData.load($scope.selectedWeek, function(err, data) {
@@ -103,7 +108,9 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
         $scope.selectedDayDetails = {key: key, day: $scope.processedData.days[key]};
     }
 
-    $scope.showAdvanced = function(ev) {
+    $scope.showSettings = function(ev) {
+        $scope.showUpdateNotAvailable = false;
+
         $mdDialog.show({
             controller: SettingsController,
             templateUrl: 'settings.dialog.html',
@@ -148,7 +155,6 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
         }
 
         lockedData.load($scope.selectedWeek, function(err, data) {
-            console.log('wow data', data);
             processWeekInformation(week, data);
         });
     }
@@ -166,6 +172,38 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     $scope.setDefaultTimeOff = function(key) {
         globalSettings.set('defaultTimeOff', $scope.globalSettings.defaultTimeOff);
     }
+
+    $scope.showUpdateDialog = function() {
+        var confirm = $mdDialog.confirm()
+            .textContent('Do you want to install the update and restart the app?' + $scope.updateInfo.releaseNotes)
+            .ariaLabel('Update available')
+            .targetEvent(event)
+            .theme();
+
+        $mdDialog.show({
+            controller: UpdateAvailableController,
+            templateUrl: 'updateAvailable.dialog.html',
+            scope: $scope,
+            preserveScope: true,
+            parent: angular.element(document.body),
+            targetEvent: event,
+            clickOutsideToClose: false,
+        }).then(function() {
+            ipcRenderer.send('installUpdate');
+        }, function() {
+            showUpdateDialog = false;
+            $mdToast.show($mdToast.simple()
+                .textContent('You will be asked again next time you open the app.')
+                .hideDelay(3000)
+            );
+        });
+    };
+
+    $scope.checkForUpdates = function() {
+        $scope.showUpdateNotAvailable = false;
+        $scope.checkingForUpdates = true;
+        ipcRenderer.send('checkForUpdates');
+    };
 
     function startInterval() {
         if(intervalRefresh) {
@@ -361,31 +399,22 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
 
     ipcRenderer.on('updateDownloaded', function(event, info) {
         console.log('new update', info);
-        var confirm = $mdDialog.confirm()
-            .textContent('Do you want to install the update and restart the app?' + info.releaseNotes)
-            .ariaLabel('Update available')
-            .targetEvent(event)
-            .theme();
+        $scope.isUpdateAvailable = true;
+        $scope.checkingForUpdates = false;
 
         $scope.updateInfo = info;
         $scope.updateInfo.releaseNotes = $sce.trustAsHtml(info.releaseNotes);
 
-        $mdDialog.show({
-            controller: UpdateAvailableController,
-            templateUrl: 'updateAvailable.dialog.html',
-            scope: $scope,
-            preserveScope: true,
-            parent: angular.element(document.body),
-            targetEvent: event,
-            clickOutsideToClose: false,
-        }).then(function() {
-            ipcRenderer.send('installUpdate');
-        }, function() {
-            $mdToast.show($mdToast.simple()
-                .textContent('You will be asked again next time you open the app.')
-                .hideDelay(3000)
-            );
-        });
+        if(shouldShowUpdateDialog) {
+            $scope.showUpdateDialog();
+        } 
+    });
+
+    ipcRenderer.on('updateNotAvailable', function(event, info) {
+        console.log('no updates available', info);
+        $scope.isUpdateAvailable = false;
+        $scope.checkingForUpdates = false;
+        $scope.showUpdateNotAvailable = true;
     });
 
     globalSettings.on('dataChange', function(date, data) {

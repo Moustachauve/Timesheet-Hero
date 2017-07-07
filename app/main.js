@@ -62,6 +62,7 @@ app.on('ready', function () {
     })
     autoUpdater.on('update-not-available', (ev, info) => {
         console.log('Update not available.');
+        window.webContents.send('updateNotAvailable');
     })
     autoUpdater.on('error', (ev, err) => {
         console.log('Error in auto-updater.');
@@ -73,7 +74,7 @@ app.on('ready', function () {
         console.log(log_message);
     })
     autoUpdater.on('update-downloaded', (ev) => {
-        console.log('Update downloaded', ev);
+        console.log('Update downloaded');
         window.webContents.send('updateDownloaded', ev);
     });
     
@@ -178,17 +179,22 @@ app.on('ready', function () {
         trayIcon.displayBalloon({title: title, content: content});
     });
 
+    ipcMain.on('checkForUpdates', (event, title) => {
+        console.log('Checking for updates (manually)...');
+        autoUpdater.checkForUpdates();
+    });
+
     ipcMain.on('installUpdate', (event, title, content) => {
         console.log('restarting...');
         autoUpdater.quitAndInstall();
     });
 
-    if(!isDev) {
+    //if(!isDev) {
         autoUpdater.checkForUpdates();
     
         setInterval(function() {
             console.log('Checking for updates...');
             autoUpdater.checkForUpdates();
-        }, 7200000); //2hrs
-    }
+        }, 3600000); //1hrs
+    //}
 });
