@@ -43,6 +43,13 @@ app.on('ready', function () {
     var isSavingDone = false;
     var isSaving = false;
 
+    //Save as unlocked when the app launch as we assume the computer is unlocked
+    lockedData.addData(false, null, function(err, success) {
+        if(err) {
+            throw err;
+        }
+    });
+
     timeTracker.start();
     window = new BrowserWindow({
         frame: true,
