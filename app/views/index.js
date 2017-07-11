@@ -10,8 +10,16 @@ const globalSettings = require('../lib/globalSettings');
 
 'use strict'
 
-console.log = log.info
+var oldConsoleLog = console.log;
+console.log = function() {
+    if(arguments && arguments[0]) {
+        arguments[0] = '[renderer] ' + arguments[0];
+    } else {
+        arguments = ['[renderer]'];
+    }
 
+    log.info(...arguments);
+}
 
 const DATE_FORMAT = 'YYYY-MM-DD';
 
