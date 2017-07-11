@@ -175,7 +175,7 @@ lockedData.load = function (date, callback) {
 
         fs.access(filePath, function(err) {
             if(err && err.code === 'ENOENT') {
-                console.log('not found');
+                console.log('Creating new file with name: ', getFileName(date));
                 globalSettings.get('defaultHoursToWork', function(err, defaultHoursToWork) {
                     return callback(null, { 
                         hoursToWork: defaultHoursToWork,
@@ -240,10 +240,14 @@ function saveData(date, data, callback) {
 }
 
 function getFilePath(date, callback) {
-    var filename = moment(date).startOf('isoWeek').format('YYYY-MM-DD') + (isDev ? '-dev' : '') + '.json';
+    var filename = getFileName(date);
     mkdirp(folder, function(err) {
         if(err) { return callback(err); }
 
         return callback(null, path.join(folder, filename));
     });
+}
+
+function getFileName(date) {
+    return moment(date).startOf('isoWeek').format('YYYY-MM-DD') + (isDev ? '-dev' : '') + '.json';
 }

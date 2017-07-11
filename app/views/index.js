@@ -3,11 +3,15 @@ require('angular-material');
 require('angular-animate');
 require('angular-aria');
 const moment = require('moment');
-const {ipcRenderer, remote} = require('electron');  
+const {ipcRenderer, remote} = require('electron');
+const log = require('electron-log');
 const lockedData = require('../lib/lockedData');
 const globalSettings = require('../lib/globalSettings');
 
 'use strict'
+
+console.log = log.info
+
 
 const DATE_FORMAT = 'YYYY-MM-DD';
 
@@ -52,27 +56,15 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     var shouldShowUpdateDialog = true;
 
     globalSettings.load(function(err, data) {
+        console.log('loaded global settings, loading locked data...');
         $scope.globalSettings = data;
         lockedData.load($scope.selectedWeek, function(err, data) {
-            console.log('wow data', data);
+            console.log('locked data loaded.');
             processWeekInformation(null, data);
         });
     });
 
-    lockedData.getAvailableDates(function(err, dates) {
-        $scope.datesAvailable = {};
-        for(var i = 0; i < dates.length; i++) {
-            var date = moment(dates[i]);
-            for(var j = 0; j < 7; j++) {
-                $scope.datesAvailable[date.format(DATE_FORMAT)] = moment(date);
-                date.add(1, 'day');
-            }
-        }
-        console.log($scope.datesAvailable);
-        $scope.$apply();
-    });
-
-    ipcRenderer.send('getDatesAvailable');
+    getAvailableDatesForCalendar();
     startInterval();
 
     $scope.changePauseTime = function(key) {
@@ -205,15 +197,18 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     };
 
     function startInterval() {
-        if(intervalRefresh) {
-            $interval.cancel(intervalRefresh);
-        }
+        stopInterval();
+
+        console.log('starting Interval...');
         intervalRefresh = $interval(function () {
             if($scope.processedData && $scope.processedData.days) {
                 var today = moment();
                 if(!$scope.processedData.days[today.format($scope.dateFormat)]) {
-                    $scope.processedData.days[today.format($scope.dateFormat)] = {};
-                    $scope.processedData.days[today.format($scope.dateFormat)].time = {};
+                    console.log('Current day is not in processed days. Reloading proccessed days...');
+                    console.log('This is probably because we changed week');
+                    getAvailableDatesForCalendar();
+                    $scope.setSelectedWeek(moment());
+                    return;
                 }
                 calculateTotal();
                 refreshDayInfo();
@@ -223,6 +218,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
 
     function stopInterval() {
         if(intervalRefresh) {
+            console.log('Stopping Interval...');
             $interval.cancel(intervalRefresh);
         }
     }
@@ -366,10 +362,14 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
 
                 // We are starting a new day!
                 if(!element.date.isSame(previousDayToday, 'day')) {
+                    console.log("Starting a new day: ", element.date.format('MMMM Do YYYY, h:mm:ss a'));
                     // We are starting a new week!!
                     if(previousDayToday.isoWeek() !== element.date.isoWeek()) {
-                        $scope.setSelectedWeek(previousDayToday);
+                        console.log("Starting a new week: ", element.date.format('MMMM Do YYYY, h:mm:ss a'));
+                        getAvailableDatesForCalendar();
+                        $scope.setSelectedWeek(moment());
                     } else {
+                        console.log('reloading current week information');
                         lockedData.load($scope.selectedWeek, function(err, data) {
                             processWeekInformation(null, data);
                         });
@@ -379,10 +379,28 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
 
                 if(!element.notified && element.total.corrected > (hoursToWorkDaily * 60 * 60 * 1000)) {
                     element.notified = true;
+                    console.log('user worked ' + hoursToWorkDaily + 'hrs today. Notifying...');
                     ipcRenderer.send('notify', '', 'You worked enough hours for today (' + hoursToWorkDaily + 'h).');
                 }
             }
         }
+    }
+
+    function getAvailableDatesForCalendar() {
+        console.log('Getting available dates for calendar...');
+        lockedData.getAvailableDates(function(err, dates) {
+            $scope.datesAvailable = {};
+            for(var i = 0; i < dates.length; i++) {
+                var date = moment(dates[i]);
+                for(var j = 0; j < 7; j++) {
+                    $scope.datesAvailable[date.format(DATE_FORMAT)] = moment(date);
+                    date.add(1, 'day');
+                }
+            }
+
+            console.log('Received available dates for calendar.');
+            $scope.$apply();
+        });
     }
 
     ipcRenderer.on('lockedDataChange', function(event, date, data) {
