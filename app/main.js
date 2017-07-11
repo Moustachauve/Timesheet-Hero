@@ -27,7 +27,10 @@ var window = null;
 // prevent multiple instances
 var shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) {
     if (window) {
-        if (window.isMinimized()) window.restore();
+        window.show();
+        if (window.isMinimized()) {
+            window.restore();
+        }
         window.focus();
     }
 });
@@ -59,6 +62,7 @@ app.on('ready', function () {
 
     timeTracker.start();
     window = new BrowserWindow({
+        backgroundColor: '#303030',
         frame: true,
         icon: path.join(__dirname, 'icon.ico')
     });
@@ -207,7 +211,6 @@ app.on('ready', function () {
         autoUpdater.checkForUpdates();
     
         setInterval(function() {
-            console.log('Checking for updates...');
             autoUpdater.checkForUpdates();
         }, 3600000); //1hrs
     //}
