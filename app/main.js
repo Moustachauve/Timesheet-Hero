@@ -64,7 +64,9 @@ app.on('ready', function () {
     window = new BrowserWindow({
         backgroundColor: '#303030',
         frame: true,
-        icon: path.join(__dirname, 'icon.ico')
+        icon: path.join(__dirname, 'icon.ico'),
+        minWidth: 315,
+        minHeight: 250
     });
 
     if(isDev) {
