@@ -231,7 +231,7 @@ function saveData(date, data, callback) {
     getFilePath(date, function(err, filePath) {
         if(err) { return callback(err); }
 
-        jsonfile.writeFile(filePath, data, function(err) {
+        jsonfile.writeFile(filePath, data, {spaces: 2}, function(err) {
             if(err) { return callback(err); }
             lockedData.emit('dataChange', date, data);
             return callback();
