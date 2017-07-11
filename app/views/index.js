@@ -423,6 +423,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
         $scope.updateInfo.releaseNotes = $sce.trustAsHtml(info.releaseNotes);
 
         if(shouldShowUpdateDialog) {
+            shouldShowUpdateDialog = false;
             $scope.showUpdateDialog();
         } 
     });
