@@ -69,7 +69,7 @@ app.on('ready', function () {
     window.setMenu(null);
     window.tray = trayIcon;
     window.loadURL(path.join(__dirname, 'views/index.html'));
-    if(isDev || true) {
+    if(isDev) {
         window.openDevTools();
     }
     window.show();
