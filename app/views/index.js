@@ -2,10 +2,11 @@ require('angular');
 require('angular-material');
 require('angular-animate');
 require('angular-aria');
+require('md-pickers')
 const moment = require('moment');
 const {ipcRenderer, remote} = require('electron');
 const log = require('electron-log');
-var drag = require('electron-drag');
+const drag = require('electron-drag');
 const lockedData = require('../lib/lockedData');
 const globalSettings = require('../lib/globalSettings');
 
@@ -26,7 +27,7 @@ console.log = function() {
 
 const DATE_FORMAT = 'YYYY-MM-DD';
 
-var app = angular.module('afkCalculator',['ngMaterial']);
+var app = angular.module('afkCalculator',['ngMaterial', 'mdPickers']);
 
 app.config(function($mdThemingProvider) {
   $mdThemingProvider.theme('default')
