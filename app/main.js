@@ -16,8 +16,6 @@ if(isDev) {
     log.transports.file.file = 'dist/log-dev.log';
 }
 
-console.log(log.transports.file.file);
-
 console.log = log.info;
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
@@ -60,7 +58,6 @@ app.on('ready', function () {
         }
     });
 
-    timeTracker.start();
     window = new BrowserWindow({
         backgroundColor: '#303030',
         frame: false,
@@ -69,9 +66,15 @@ app.on('ready', function () {
         minHeight: 250
     });
 
-    if(isDev) {
+    window.setMenu(null);
+    window.tray = trayIcon;
+    window.loadURL(path.join(__dirname, 'views/index.html'));
+    if(isDev || true) {
         window.openDevTools();
     }
+    window.show();
+
+    timeTracker.start();
 
     //TODO: Create a module to handle the autoUpdater
     autoUpdater.on('checking-for-update', () => {
@@ -120,11 +123,6 @@ app.on('ready', function () {
         window.show();
     });
     
-    window.setMenu(null);
-    window.tray = trayIcon;
-    window.loadURL(path.join(__dirname, 'views/index.html'));
-    window.show();
-
     lockedData.on('dataChange', function(date, data) {
         window.webContents.send('lockedDataChange', date.valueOf(), data);
     });
