@@ -19,6 +19,7 @@
     "electron-updater": "^2.4.1",
     "ffi": "^2.2.0",
     "jsonfile": "^3.0.0",
+    "md-pickers": "^1.1.0",
     "mkdirp": "^0.5.1",
     "moment": "^2.18.1"
   },
