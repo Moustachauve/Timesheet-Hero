@@ -5,10 +5,13 @@ require('angular-aria');
 const moment = require('moment');
 const {ipcRenderer, remote} = require('electron');
 const log = require('electron-log');
+var drag = require('electron-drag');
 const lockedData = require('../lib/lockedData');
 const globalSettings = require('../lib/globalSettings');
 
 'use strict'
+
+var titleBarDrag = drag('#titleBar');
 
 var oldConsoleLog = console.log;
 console.log = function() {
@@ -44,6 +47,9 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
 
     var isCurrentWeekSelected = true;
     var previousDayToday = moment();
+
+    $scope.isWindowMaximized = false;
+
     $scope.dateFormat = DATE_FORMAT;
     $scope.globalSettings = {};
 
@@ -136,6 +142,18 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
             clickOutsideToClose: true,
             fullscreen: true
         });
+    }
+
+    $scope.windowMinimize = function() {
+        ipcRenderer.send('windowMinimize');
+    }
+
+    $scope.windowMaximize = function() {
+        ipcRenderer.send('windowMaximize');
+    }
+
+    $scope.windowClose = function() {
+        ipcRenderer.send('windowClose');
     }
 
     $scope.setSelectedWeek = function(week) {
@@ -441,6 +459,16 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
         $scope.isUpdateAvailable = false;
         $scope.checkingForUpdates = false;
         $scope.showUpdateNotAvailable = true;
+    });
+
+    ipcRenderer.on('windowMaximize', function() {
+        $scope.isWindowMaximized = true;
+        titleBarDrag();
+    });
+
+    ipcRenderer.on('windowUnmaximize', function() {
+        $scope.isWindowMaximized = false;
+        titleBarDrag = drag('#titleBar');
     });
 
     globalSettings.on('dataChange', function(date, data) {

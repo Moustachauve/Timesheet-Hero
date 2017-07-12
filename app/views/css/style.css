@@ -16,6 +16,12 @@ md-input-container .hint {
     color: grey; 
 }
 
+md-toolbar, #titleBar {
+    -webkit-user-select: none;
+    user-select: none; 
+    cursor: default;
+}
+
 md-grid-tile {
     transition: all 300ms ease-out 50ms;
 }

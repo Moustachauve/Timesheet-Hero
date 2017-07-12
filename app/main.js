@@ -63,7 +63,7 @@ app.on('ready', function () {
     timeTracker.start();
     window = new BrowserWindow({
         backgroundColor: '#303030',
-        frame: true,
+        frame: false,
         icon: path.join(__dirname, 'icon.ico'),
         minWidth: 315,
         minHeight: 250
@@ -160,6 +160,14 @@ app.on('ready', function () {
         return false;
     });
 
+    window.on('maximize', function(event) {
+        window.webContents.send('windowMaximize');
+    });
+
+    window.on('unmaximize', function(event) {
+        window.webContents.send('windowUnmaximize');
+    });
+
     ipcMain.on('setTimeOff', (event, dateMs, timeOff) => {
         var date = moment(dateMs);
         lockedData.setTimeOff(date, timeOff, function(err) {
@@ -207,6 +215,22 @@ app.on('ready', function () {
     ipcMain.on('installUpdate', (event, title, content) => {
         console.log('restarting...');
         autoUpdater.quitAndInstall();
+    });
+
+    ipcMain.on('windowMinimize', (event) => {
+        window.minimize();
+    });
+
+    ipcMain.on('windowMaximize', (event) => {
+        if(window.isMaximized()) {
+            window.restore();
+        } else {
+            window.maximize();
+        }
+    });
+
+    ipcMain.on('windowClose', (event) => {
+        window.hide();
     });
 
     //if(!isDev) {

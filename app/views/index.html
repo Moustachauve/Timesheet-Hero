@@ -5,24 +5,54 @@
         <title>Timesheet Hero</title>
         
         <link rel="stylesheet" href="../node_modules/angular-material/angular-material.min.css"/>
+        <link rel="stylesheet" href="css/titlebar.css"/>
         <link rel="stylesheet" href="css/style.css"/>
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
         <!--<link rel="stylesheet" type="text/less" href="../less/main.less" />-->
     </head>
     <body ng-cloak layout="column">
-        <md-toolbar>
-            <div class="md-toolbar-tools">
-                <h2 flex md-truncate>Timesheet Hero - {{selectedWeek.format(dateFormat)}}</h2>
-                <md-button class="md-icon-button md-accent md-hue-2" aria-label="New update available" ng-click="showUpdateDialog($event)" ng-if="isUpdateAvailable">
-                    <md-tooltip md-direction="bottom">A new update is ready to be installed</md-tooltip>
-                    <i class="material-icons">announcement</i>
-                </md-button>
-                <md-button class="md-icon-button" aria-label="Settings" ng-click="showSettings($event)">
-                    <i class="material-icons">settings</i>
-                </md-button>
+        <div id="titleBar">
+            <div class="titlebar" ng-dblclick="windowMaximize()">
+                <div class="titlebar-controls"  ng-mousedown="$event.stopPropagation();">
+                    <div class="titlebar-minimize" ng-click="windowMinimize()">
+                        <svg x="0px" y="0px" viewBox="0 0 10 1">
+                            <rect fill="#000000" width="10" height="1"></rect>
+                        </svg>
+                    </div>
+                    <div class="titlebar-resize" ng-click="windowMaximize()">
+                        <svg class="fullscreen-svg" x="0px" y="0px" viewBox="0 0 10 10" ng-hide="isWindowMaximized">
+                            <path fill="#000000" d="M 0 0 L 0 10 L 10 10 L 10 0 L 0 0 z M 1 1 L 9 1 L 9 9 L 1 9 L 1 1 z "></path>
+                        </svg>
+                        <svg class="maximize-svg" x="0px" y="0px" viewBox="0 0 10 10" ng-show="isWindowMaximized">
+                            <mask id="Mask">
+                                <rect fill="#FFFFFF" width="10" height="10"></rect>
+                                <path fill="#000000" d="M 3 1 L 9 1 L 9 7 L 8 7 L 8 2 L 3 2 L 3 1 z"></path>
+                                <path fill="#000000" d="M 1 3 L 7 3 L 7 9 L 1 9 L 1 3 z"></path>
+                            </mask>
+                            <path fill="#000000" d="M 2 0 L 10 0 L 10 8 L 8 8 L 8 10 L 0 10 L 0 2 L 2 2 L 2 0 z" mask="url(#Mask)"></path>
+                        </svg>
+                    </div>
+                    <div class="titlebar-close" ng-click="windowClose()">
+                        <svg x="0px" y="0px" viewBox="0 0 10 10">
+                            <polygon fill="#000000" points="10,1 9,0 5,4 1,0 0,1 4,5 0,9 1,10 5,6 9,10 10,9 6,5"></polygon>
+                        </svg>
+                    </div>
+                </div>
             </div>
-        </md-toolbar>
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h1 flex md-truncate>Timesheet Hero - {{selectedWeek.format(dateFormat)}}</h1>
+                    <md-button class="md-icon-button md-accent md-hue-2" aria-label="New update available" ng-click="showUpdateDialog($event)" ng-if="isUpdateAvailable">
+                        <md-tooltip md-direction="bottom">A new update is ready to be installed</md-tooltip>
+                        <i class="material-icons">announcement</i>
+                    </md-button>
+                    <md-button class="md-icon-button" aria-label="Settings" ng-click="showSettings($event); $event.stopPropagation();" ng-mousedown="$event.stopPropagation();">
+                        <i class="material-icons">settings</i>
+                    </md-button>
+                </div>
+            </md-toolbar>
+        </div>
 
         <md-content>
             <md-content class="md-padding" layout-xs="column" layout="row">
