@@ -247,6 +247,6 @@ app.on('ready', function () {
     
         setInterval(function() {
             autoUpdater.checkForUpdates();
-        }, 3600000); //1hrs
+        }, 21600000); //6hrs
     //}
 });
