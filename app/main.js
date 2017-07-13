@@ -50,6 +50,7 @@ app.on('ready', function () {
 
     var isSavingDone = false;
     var isSaving = false;
+    var firstTimeClosing = true;
 
     //Save as unlocked when the app launch as we assume the computer is unlocked
     lockedData.addData(false, null, function(err, success) {
@@ -134,7 +135,10 @@ app.on('ready', function () {
     window.on('close', function (event) {
         if(!app.isQuiting){
             event.preventDefault();
-            trayIcon.displayBalloon({title: '', content: 'The app is still running in the background.'});
+            if(firstTimeClosing) {
+                trayIcon.displayBalloon({title: '', content: 'The app is still running in the background.'});
+                firstTimeClosing = false;
+            }
             window.hide();
             return false;
         } 
