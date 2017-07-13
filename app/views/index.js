@@ -436,14 +436,14 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
         var today = moment().format($scope.dateFormat);
         var isFuture = false;
 
-        var hoursToWorkDaily = $scope.hoursToWork / 5;
-
         for (var key in $scope.processedData.days) {
             var element = $scope.processedData.days[key];
             element.isToday = key == today;
             element.isFuture = isFuture;
             if(element.isToday) {
                 isFuture = true;
+
+                var hoursToWorkToday = $scope.weekPlan[key].time;
 
                 // We are starting a new day!
                 if(!element.date.isSame(previousDayToday, 'day')) {
@@ -462,10 +462,10 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
                     previousDayToday = moment(element.date);
                 }
 
-                if(!element.notified && element.total.corrected > (hoursToWorkDaily * 60 * 60 * 1000)) {
+                if(!element.notified && element.total.corrected > (hoursToWorkToday * 60 * 60 * 1000)) {
                     element.notified = true;
-                    console.log('user worked ' + hoursToWorkDaily + 'hrs today. Notifying...');
-                    ipcRenderer.send('notify', '', 'You worked enough hours for today (' + hoursToWorkDaily + 'h).');
+                    console.log('user worked ' + hoursToWorkToday + 'hrs today. Notifying...');
+                    ipcRenderer.send('notify', '', 'You worked enough hours for today (' + hoursToWorkToday + 'h).');
                 }
             }
         }
