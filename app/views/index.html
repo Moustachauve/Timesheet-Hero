@@ -88,7 +88,7 @@
 
             <md-content class="md-padding" layout-gt-xs="row" layout="column" layout-wrap>
                 
-                <div ng-repeat="(key, day) in processedData.days" flex="auto">
+                <div ng-repeat="(key, day) in processedData.days" flex="auto" ng-if="!day.isHidden">
                     <md-card>
                         <md-card-title>
                             <md-button class="md-icon-button card-overflow" aria-label="Settings" ng-click="showDayDetails($event, key, day)">
