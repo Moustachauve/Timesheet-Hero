@@ -58,8 +58,13 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     $scope.weekDays = [];
     $scope.hoursToWork = 0;
     $scope.processedData = {};
-    $scope.totalWeekly = 0;
-    $scope.totalLeft = 0;
+    $scope.weekPlan = [];
+    $scope.totals = {
+        totalWeekly: 0,
+        totalLeft: 0,
+        totalPercent: 0,
+        totalClass: 'not-done'
+    }
 
     $scope.datesAvailable = [];
 
@@ -129,9 +134,8 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
         });
     };
 
-    $scope.showDayDetails = function(key, day) {
+    $scope.showDayDetails = function(ev, key, day) {
         $scope.selectedDayDetails = {key: key, day: day};
-        console.log($scope.selectedDayDetails);
 
         $mdDialog.show({
             templateUrl: 'dayDetails.dialog.html',
@@ -139,7 +143,20 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
             scope: $scope,
             preserveScope: true,
             parent: angular.element(document.body),
-            targetEvent: null,
+            targetEvent: ev,
+            clickOutsideToClose: true,
+            fullscreen: true
+        });
+    }
+
+    $scope.showWeekPlan = function(ev) {
+        $mdDialog.show({
+            templateUrl: 'weekPlan.dialog.html',
+            controller: WeekPlanController,
+            scope: $scope,
+            preserveScope: true,
+            parent: angular.element(document.body),
+            targetEvent: ev,
             clickOutsideToClose: true,
             fullscreen: true
         });
@@ -189,6 +206,17 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     
     $scope.setDefaultTimeOff = function(key) {
         globalSettings.set('defaultTimeOff', $scope.globalSettings.defaultTimeOff);
+    }
+
+    $scope.saveWeekPlan = function() {
+        var weekPlan = {};
+        for(dayPlan in $scope.weekPlan) {
+            weekPlan[dayPlan] = {
+                time: $scope.weekPlan[dayPlan].time
+            }
+        }
+        console.log('saving week plan');
+        ipcRenderer.send('saveWeekPlan', $scope.selectedWeek.valueOf(), $scope.weekPlan);
     }
 
     $scope.showUpdateDialog = function() {
@@ -264,10 +292,15 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
         var isFuture = false;
 
         $scope.hoursToWork = data.hoursToWork;
+        $scope.weekPlan = data.weekPlan;
 
         for(var i = 0; i < 7; i++) {
             var arrayKey = currentDate.format($scope.dateFormat);
 
+            // Week Plan
+            $scope.weekPlan[arrayKey].date = moment(currentDate);
+
+            // Daily hours
             returnValue.days[arrayKey] = {};
             day = returnValue.days[arrayKey];
             day.date = moment(currentDate);
@@ -325,14 +358,16 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
             
             currentDate.add(1, 'day');
         }
+
         $scope.processedData = returnValue;
         calculateTotal();
         $scope.$apply();
     }
 
     function calculateTotal() {
-        $scope.totalWeekly = moment.duration();
-        $scope.totalLeft = 0;
+        $scope.totals.totalWeekly = moment.duration();
+        $scope.totals.totalLeft = 0;
+        var today = moment().format($scope.dateFormat);
 
         for (var key in $scope.processedData.days) {
             var element = $scope.processedData.days[key];
@@ -343,7 +378,9 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
             if(element.isOff) {
                 element.total.subtotal = 7 * 60 * 60 * 1000;
                 element.total.corrected = element.total.subtotal;
-                $scope.totalWeekly.add(element.total.corrected);
+                $scope.totals.totalWeekly.add(element.total.corrected);
+                element.total.percentWorked = 100;
+                element.total.percentWorkedClass = 'done';
             }
             else if(element.time.start && (element.time.stop || element.isToday)) {
 
@@ -360,18 +397,39 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
                 } else {
                     element.total.corrected = element.total.subtotal;
                 }
-                $scope.totalWeekly.add(element.total.corrected);
+                var dailyPlan = $scope.weekPlan[key].time * 60 * 60 * 1000;
+                if(dailyPlan > 0) {
+                    element.total.percentWorked = (element.total.corrected / dailyPlan) * 100;
+                    if(element.total.percentWorked >= 100) {
+                        element.total.percentWorkedClass = 'done';
+                    } else if(key == today) {
+                        element.total.percentWorkedClass = 'progressing';
+                    } else {
+                        element.total.percentWorkedClass = 'not-done';
+                    }
+                } else {
+                    element.total.percentWorked = 100;
+                    element.total.percentWorkedClass = 'done';
+                }
+
+                $scope.totals.totalWeekly.add(element.total.corrected);
+            } else {
+                element.total.percentWorked = 0;
             }
         }
 
-        var timeLeft = moment.duration($scope.hoursToWork, 'hours').subtract($scope.totalWeekly);
+        var timeLeft = moment.duration($scope.hoursToWork, 'hours').subtract($scope.totals.totalWeekly);
 
         if(!$scope.processedData.notified && timeLeft.hours() >= $scope.hoursToWork) {
             $scope.processedData.notified = true;
             ipcRenderer.send('notify', '', 'You worked enough hours for the week.');
         }
 
-        $scope.totalLeft = timeLeft;
+        $scope.totals.totalPercent = ($scope.totals.totalWeekly / ($scope.hoursToWork * 60 * 60 * 1000)) * 100;
+        if($scope.totals.totalPercent >= 100) {
+            $scope.totals.totalClass = 'done';
+        }
+        $scope.totals.totalLeft = timeLeft;
     }
 
     function refreshDayInfo() {
@@ -559,5 +617,23 @@ function DayDetailsController($scope, $mdDialog) {
         //return $scope.datesAvailable.indexOf(date);
         var day = moment(date);
         return !!$scope.datesAvailable[day.format(DATE_FORMAT)];
+    }
+}
+
+/* WEEK PLAN */
+
+function WeekPlanController($scope, $mdDialog) {
+    $scope.close = function() {
+        $mdDialog.hide();
+    };
+
+    $scope.totalTime = function() {
+        var total = 0;
+
+        for(dayPlan in $scope.weekPlan) {
+            total += $scope.weekPlan[dayPlan].time;
+        }
+
+        return total;
     }
 }

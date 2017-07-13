@@ -82,3 +82,30 @@ md-toast.md-default-theme .md-toast-content, md-toast .md-toast-content {
 div.md-headline.day-title {
     padding-right: 26px;
 }
+
+md-slider-container.week-plan-slider-container {
+    min-width: 84px;
+}
+
+md-slider-container.week-plan-slider-container md-slider {
+    min-height: 175px;
+}
+
+md-slider-container>:first-child:not(md-slider), md-slider-container>:last-child:not(md-slider) {
+    max-width: none;
+}
+
+md-progress-linear.progressing .md-container,
+md-progress-linear.not-done .md-container,
+md-progress-linear.done .md-container {
+    background-color: #757575;
+}
+md-progress-linear.progressing .md-container .md-bar {
+    background-color: #448aff;
+}
+md-progress-linear.not-done .md-container .md-bar {
+    background-color: #bbdefb;
+}
+md-progress-linear.done .md-container .md-bar {
+    background-color: #43a047;
+}

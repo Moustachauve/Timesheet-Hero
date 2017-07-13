@@ -47,7 +47,7 @@ lockedData.addData = function(isLocked, date, callback) {
 
 lockedData.setTimeOff = function(date, timeOff, callback) {
     if(!date) {
-        callback('No date!');
+        return callback('No date!');
     }
 
     getFilePath(date, function(err, filePath) {
@@ -72,7 +72,7 @@ lockedData.setTimeOff = function(date, timeOff, callback) {
 
 lockedData.setHoursToWork = function(date, hoursToWork, callback) {
     if(!date) {
-        callback('No date!');
+        return callback('No date!');
     }
 
     getFilePath(date, function(err, filePath) {
@@ -93,7 +93,7 @@ lockedData.setHoursToWork = function(date, hoursToWork, callback) {
 
 lockedData.setDayOff = function(date, isOff, callback) {
     if(!date) {
-        callback('No date!');
+        return callback('No date!');
     }
 
     getFilePath(date, function(err, filePath) {
@@ -119,7 +119,7 @@ lockedData.setDayOff = function(date, isOff, callback) {
 
 lockedData.setOverrideStartTime = function(date, time, callback) {
     if(!date) {
-        callback('No date!');
+        return callback('No date!');
     }
 
     getFilePath(date, function(err, filePath) {
@@ -145,7 +145,7 @@ lockedData.setOverrideStartTime = function(date, time, callback) {
 
 lockedData.setOverrideStopTime = function(date, time, callback) {
     if(!date) {
-        callback('No date!');
+        return callback('No date!');
     }
 
     getFilePath(date, function(err, filePath) {
@@ -169,6 +169,28 @@ lockedData.setOverrideStopTime = function(date, time, callback) {
     });
 }
 
+lockedData.saveWeekPlan = function(date, weekPlan, callback) {
+    if(!date) {
+        return callback('No date!');
+    }
+
+    getFilePath(date, function(err, filePath) {
+        if(err) { return callback(err); }
+
+        lockedData.load(date, function(err, data) {
+            if(err) { return callback(err); }
+    
+
+            data.weekPlan = weekPlan;
+            
+            saveData(date, data, function (err) {
+                if(err) { return callback(err); }
+                return callback(null, true)
+            });
+        });
+    });
+}
+
 lockedData.load = function (date, callback) {
     getFilePath(date, function(err, filePath) {
         if(err) { return callback(err); }
@@ -180,6 +202,7 @@ lockedData.load = function (date, callback) {
                     return callback(null, { 
                         hoursToWork: defaultHoursToWork,
                         version: 1,
+                        weekPlan: getDefaultWeekPlan(date, defaultHoursToWork),
                         dates: {}
                     });
                 });
@@ -188,6 +211,9 @@ lockedData.load = function (date, callback) {
             }
 
             jsonfile.readFile(filePath, function(err, data) {
+                if(!data.weekPlan) {
+                    data.weekPlan = getDefaultWeekPlan(date, data.hoursToWork);
+                }
                 return callback(err, data);
             });
         });
@@ -220,11 +246,29 @@ lockedData.getAvailableDates = function(callback) {
 
 function getDefaultObject() {
     var settings = globalSettings.loadSync();
-    return {
+    var defaultObject = {
         timeOff: settings.defaultTimeOff,
         isOff: false,
         lockTime: []
     };
+
+    // Build the default week plan
+
+    return defaultObject;
+}
+
+function getDefaultWeekPlan(week, hoursToWork) {
+    var weekPlan = {};
+    var defaultDailyTime = hoursToWork / 5;
+    var currentDay = moment(week).startOf('isoWeek');
+    for(var i = 0; i < 7; i++) {
+        weekPlan[currentDay.format('YYYY-MM-DD')] = {
+            time: (i < 5 ? defaultDailyTime : 0)
+        };
+        currentDay.add(1, 'days');
+    }
+
+    return weekPlan;
 }
 
 function saveData(date, data, callback) {

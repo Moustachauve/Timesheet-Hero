@@ -48,7 +48,12 @@
                         <md-tooltip md-direction="bottom">A new update is ready to be installed</md-tooltip>
                         <i class="material-icons">announcement</i>
                     </md-button>
+                    <md-button class="md-icon-button" aria-label="Week Planner" ng-click="showWeekPlan($event); $event.stopPropagation();" ng-mousedown="$event.stopPropagation();">
+                        <md-tooltip md-direction="bottom">Week Planner</md-tooltip>
+                        <i class="material-icons">tune</i>
+                    </md-button>
                     <md-button class="md-icon-button" aria-label="Settings" ng-click="showSettings($event); $event.stopPropagation();" ng-mousedown="$event.stopPropagation();">
+                        <md-tooltip md-direction="bottom">Settings</md-tooltip>
                         <i class="material-icons">settings</i>
                     </md-button>
                 </div>
@@ -64,8 +69,9 @@
                         </md-card-title-text>
                     </md-card-title>
                     <md-card-content class="md-display-3">
-                        {{totalWeekly | formatMomentTimeDurationMS}}
+                        {{totals.totalWeekly | formatMomentTimeDurationMS}}
                     </md-card-content>
+                    <md-progress-linear ng-class="totals.totalClass" md-mode="determinate" value="{{totals.totalPercent}}"></md-progress-linear>
                 </md-card>
                 <md-card flex-gt-xs="50" layout-align="center center">
                     <md-card-title>
@@ -74,8 +80,9 @@
                         </md-card-title-text>
                     </md-card-title>
                     <md-card-content class="md-display-3">
-                        {{totalLeft | formatMomentTimeDurationMS}}
+                        {{totals.totalLeft | formatMomentTimeDurationMS}}
                     </md-card-content>
+                    <md-progress-linear ng-class="totals.totalClass" md-mode="determinate" value="{{totals.totalPercent}}"></md-progress-linear>
                 </md-card>
             </md-content>
 
@@ -84,7 +91,7 @@
                 <div ng-repeat="(key, day) in processedData.days" flex="auto">
                     <md-card>
                         <md-card-title>
-                            <md-button class="md-icon-button card-overflow" aria-label="Settings" ng-click="showDayDetails(key, day)">
+                            <md-button class="md-icon-button card-overflow" aria-label="Settings" ng-click="showDayDetails($event, key, day)">
                                 <i class="material-icons">more_vert</i>
                             </md-button>
                             <md-card-title-text>
@@ -120,6 +127,7 @@
                                 <span class="md-display-1">{{day.total.corrected | formatMomentTimeDurationMS}}</span>
                             </div>
                         </md-card-content>
+                        <md-progress-linear ng-class="day.total.percentWorkedClass ? day.total.percentWorkedClass : 'not-done'" md-mode="determinate" value="{{day.total.percentWorked}}"></md-progress-linear>
                     </md-card>
                 </div>
             </md-content>

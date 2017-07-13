@@ -201,6 +201,13 @@ app.on('ready', function () {
         });
     });
 
+    ipcMain.on('saveWeekPlan', (event, dateMs, weekPlan) => {
+        var date = moment(dateMs);
+        lockedData.saveWeekPlan(date, weekPlan, function(err) {
+            if(err) { throw err; }
+        });
+    });
+
     ipcMain.on('notify', (event, title, content) => {
         trayIcon.displayBalloon({title: title, content: content});
     });
