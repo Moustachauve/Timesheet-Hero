@@ -216,7 +216,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
             }
         }
         console.log('saving week plan');
-        ipcRenderer.send('saveWeekPlan', $scope.selectedWeek.valueOf(), $scope.weekPlan);
+        ipcRenderer.send('saveWeekPlan', $scope.selectedWeek.valueOf(), weekPlan);
     }
 
     $scope.showUpdateDialog = function() {
