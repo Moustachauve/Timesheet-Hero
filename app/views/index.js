@@ -304,6 +304,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
             returnValue.days[arrayKey] = {};
             day = returnValue.days[arrayKey];
             day.date = moment(currentDate);
+            day.isHidden = $scope.weekPlan[arrayKey].time == 0;
             day.isOff = false;
             day.time = { start: 0, stop: 0, total: 0 };
             day.notified = false;
