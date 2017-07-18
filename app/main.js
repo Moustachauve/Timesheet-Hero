@@ -9,6 +9,7 @@ const log = require('electron-log');
 const {app, BrowserWindow, ipcMain, Menu, Tray} = require("electron");
 const {autoUpdater} = require("electron-updater");
 const isDev = require('electron-is-dev');
+const windowStateKeeper = require('electron-window-state');
 
 const updateFeedUrl = "http://timesheethero.cgagnier.ca/";
 
@@ -52,6 +53,11 @@ app.on('ready', function () {
     var isSaving = false;
     var firstTimeClosing = true;
 
+    let mainWindowState = windowStateKeeper({
+        defaultWidth: 1000,
+        defaultHeight: 625
+    });
+
     //Save as unlocked when the app launch as we assume the computer is unlocked
     lockedData.addData(false, null, function(err, success) {
         if(err) {
@@ -63,8 +69,13 @@ app.on('ready', function () {
         backgroundColor: '#303030',
         frame: false,
         icon: path.join(__dirname, 'icon.ico'),
-        minWidth: 315,
-        minHeight: 250
+        minWidth: 325,
+        minHeight: 250,
+        x: mainWindowState.x,
+        y: mainWindowState.y,
+        width: mainWindowState.width,
+        height: mainWindowState.height,
+        isMaximized: mainWindowState.isMaximized
     });
 
     window.setMenu(null);
@@ -73,6 +84,7 @@ app.on('ready', function () {
     if(isDev) {
         window.openDevTools();
     }
+    mainWindowState.manage(window);
     window.show();
 
     timeTracker.start();
