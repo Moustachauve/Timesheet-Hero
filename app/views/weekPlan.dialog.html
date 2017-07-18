@@ -11,7 +11,6 @@
     </md-toolbar>
 
     <md-dialog-content class="md-dialog-content" ng-cloak>
-            
         <div layout="column" layout-align="space-between center">
             <md-progress-linear ng-class="totalTime() > hoursToWork ? 'md-warn' : 'md-accent'" md-mode="determinate" value="{{(totalTime()/hoursToWork)*100}}"></md-progress-linear>
             <h3 md-colors="{color: totalTime() > hoursToWork ? 'default-warn' : 'default-grey-50'}" >Total: {{totalTime()}}h of {{hoursToWork}}h</h3>
@@ -19,13 +18,13 @@
             <div layout="row" layout-align="space-between center">
                 <md-slider-container class="week-plan-slider-container" ng-repeat="dayPlan in weekPlan">
                     <h3>{{dayPlan.time}}h</h3>
-                    <md-slider ng-model="dayPlan.time" min="0" max="14" step="0.5" class="md-accent" md-vertical md-range ng-mouseup="saveWeekPlan()" aria-label="Time planned for {{dayPlan.date.format('dddd')}}" ></md-slider>
+                    <md-slider ng-model="dayPlan.time" min="0" max="14" step="0.5" class="md-accent" md-vertical md-range ng-change="saveWeekPlan()" aria-label="Time planned for {{dayPlan.date.format('dddd')}}" ></md-slider>
                     <h5>{{dayPlan.date.format('dddd')}}</h5>
                 </md-slider-container>
             </div>
         </div>
-
     </md-dialog-content>
+
     <md-dialog-actions layout="row" ng-cloak>
         <span flex></span>
         <md-button ng-click="close()" >

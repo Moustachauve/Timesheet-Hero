@@ -69,6 +69,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     $scope.datesAvailable = [];
 
     var intervalRefresh;
+    var saveWeekPlanDebounce;
 
     $scope.isUpdateAvailable = false;
     $scope.checkingForUpdates = false;
@@ -209,14 +210,18 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     }
 
     $scope.saveWeekPlan = function() {
-        var weekPlan = {};
-        for(dayPlan in $scope.weekPlan) {
-            weekPlan[dayPlan] = {
-                time: $scope.weekPlan[dayPlan].time
+        // setTimeout so we have some sort of debounce when sliding
+        clearTimeout(saveWeekPlanDebounce);
+        saveWeekPlanDebounce = setTimeout(function() {
+            var weekPlan = {};
+            for(dayPlan in $scope.weekPlan) {
+                weekPlan[dayPlan] = {
+                    time: $scope.weekPlan[dayPlan].time
+                }
             }
-        }
-        console.log('saving week plan');
-        ipcRenderer.send('saveWeekPlan', $scope.selectedWeek.valueOf(), weekPlan);
+            console.log('saving week plan');
+            ipcRenderer.send('saveWeekPlan', $scope.selectedWeek.valueOf(), weekPlan);
+        }, 500);
     }
 
     $scope.showUpdateDialog = function() {
