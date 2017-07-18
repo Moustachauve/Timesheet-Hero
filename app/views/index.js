@@ -299,12 +299,14 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
 
             // Week Plan
             $scope.weekPlan[arrayKey].date = moment(currentDate);
+            $scope.weekPlan[arrayKey].timeMS = $scope.weekPlan[arrayKey].time * 60 * 60 * 1000;
 
             // Daily hours
             returnValue.days[arrayKey] = {};
             day = returnValue.days[arrayKey];
             day.date = moment(currentDate);
-            day.isHidden = $scope.weekPlan[arrayKey].time == 0;
+            day.plan = $scope.weekPlan[arrayKey];
+            day.isHidden = day.plan.time == 0;
             day.isOff = false;
             day.time = { start: 0, stop: 0, total: 0 };
             day.notified = false;
@@ -382,6 +384,8 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
                 $scope.totals.totalWeekly.add(element.total.corrected);
                 element.total.percentWorked = 100;
                 element.total.percentWorkedClass = 'done';
+                element.total.timeLeft = 0;
+                element.total.timeOver = 0;
             }
             else if(element.time.start && (element.time.stop || element.isToday)) {
 
@@ -398,15 +402,20 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
                 } else {
                     element.total.corrected = element.total.subtotal;
                 }
-                var dailyPlan = $scope.weekPlan[key].time * 60 * 60 * 1000;
-                if(dailyPlan > 0) {
-                    element.total.percentWorked = (element.total.corrected / dailyPlan) * 100;
+                if(element.plan.timeMS > 0) {
+                    element.total.percentWorked = (element.total.corrected / element.plan.timeMS) * 100;
                     if(element.total.percentWorked >= 100) {
                         element.total.percentWorkedClass = 'done';
+                        element.total.timeOver = element.total.corrected - element.plan.timeMS;
+                        element.total.timeLeft = 0;
                     } else if(key == today) {
                         element.total.percentWorkedClass = 'progressing';
+                        element.total.timeLeft = element.plan.timeMS - element.total.corrected;
+                        element.total.timeOver = 0;
                     } else {
                         element.total.percentWorkedClass = 'not-done';
+                        element.total.timeLeft = element.plan.timeMS - element.total.corrected;
+                        element.total.timeOver = 0;
                     }
                 } else {
                     element.total.percentWorked = 100;

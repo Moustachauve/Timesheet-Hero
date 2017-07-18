@@ -109,3 +109,10 @@ md-progress-linear.not-done .md-container .md-bar {
 md-progress-linear.done .md-container .md-bar {
     background-color: #43a047;
 }
+md-card md-card-title+md-card-content {
+    padding-bottom: 6px;
+}
+.progress-tooltip {
+    width: 100%;
+    padding-top: 15px;
+}
