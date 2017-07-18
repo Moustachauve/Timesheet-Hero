@@ -116,3 +116,9 @@ md-card md-card-title+md-card-content {
     width: 100%;
     padding-top: 15px;
 }
+
+md-tooltip.md-panel.md-tooltip.md-default-theme, md-tooltip.md-panel.md-tooltip {
+    margin-top: 10px;
+    background: #171717;
+    color: #fafafa;
+}

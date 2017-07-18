@@ -249,7 +249,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
         $scope.showUpdateNotAvailable = false;
         $scope.checkingForUpdates = true;
         shouldShowUpdateDialog = true;
-        
+
         ipcRenderer.send('checkForUpdates');
     };
 
@@ -426,7 +426,9 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
 
                 $scope.totals.totalWeekly.add(element.total.corrected);
             } else {
+                element.total.timeLeft = element.plan.timeMS;
                 element.total.percentWorked = 0;
+                element.total.timeOver = 0;
             }
         }
 

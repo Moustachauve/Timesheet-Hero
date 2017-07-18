@@ -134,10 +134,10 @@
                         </md-card-content>
                         <div class="progress-tooltip">
                             <md-progress-linear ng-class="day.total.percentWorkedClass ? day.total.percentWorkedClass : 'not-done'" md-mode="determinate" value="{{day.total.percentWorked}}"></md-progress-linear>
-                            <md-tooltip md-direction="bottom">
+                            <md-tooltip md-direction="top">
                                 <span ng-if="day.total.percentWorkedClass === 'done'">{{day.total.timeOver | formatMomentTimeDurationMS}} over</span>
                                 <span ng-if="day.total.percentWorkedClass !== 'done'">{{day.total.timeLeft | formatMomentTimeDurationMS}} left</span>
-                                <span>(Goal of {{day.plan.timeMS | formatMomentTimeDurationMS}})</span>
+                                <span>({{day.plan.timeMS | formatMomentTimeDurationMS}} planned)</span>
                             </md-tooltip>
                         </div>
                     </md-card>
