@@ -237,7 +237,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
         }).then(function() {
             ipcRenderer.send('installUpdate');
         }, function() {
-            showUpdateDialog = false;
+            shouldShowUpdateDialog = false;
             $mdToast.show($mdToast.simple()
                 .textContent('You will be asked again next time you open the app.')
                 .hideDelay(3000)
@@ -248,6 +248,8 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     $scope.checkForUpdates = function() {
         $scope.showUpdateNotAvailable = false;
         $scope.checkingForUpdates = true;
+        shouldShowUpdateDialog = true;
+        
         ipcRenderer.send('checkForUpdates');
     };
 
