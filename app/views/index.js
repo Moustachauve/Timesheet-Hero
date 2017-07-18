@@ -410,10 +410,11 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
                         element.total.percentWorkedClass = 'done';
                         element.total.timeOver = element.total.corrected - element.plan.timeMS;
                         element.total.timeLeft = 0;
-                    } else if(key == today) {
+                    } else if(element.isToday) {
                         element.total.percentWorkedClass = 'progressing';
                         element.total.timeLeft = element.plan.timeMS - element.total.corrected;
                         element.total.timeOver = 0;
+                        element.total.timeToLeave = moment(element.time.start).add(element.plan.timeMS, 'ms');
                     } else {
                         element.total.percentWorkedClass = 'not-done';
                         element.total.timeLeft = element.plan.timeMS - element.total.corrected;

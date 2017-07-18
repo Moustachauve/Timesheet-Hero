@@ -137,7 +137,7 @@
                             <md-tooltip md-direction="top">
                                 <span ng-if="day.total.percentWorkedClass === 'done'">{{day.total.timeOver | formatMomentTimeDurationMS}} over</span>
                                 <span ng-if="day.total.percentWorkedClass !== 'done'">{{day.total.timeLeft | formatMomentTimeDurationMS}} left</span>
-                                <span>({{day.plan.timeMS | formatMomentTimeDurationMS}} planned)</span>
+                                <span ng-if="day.isToday">(Done at {{day.total.timeToLeave | formatMomentTime}})</span><br>aa
                             </md-tooltip>
                         </div>
                     </md-card>
