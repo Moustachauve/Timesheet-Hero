@@ -6,14 +6,16 @@ const lockedData = require('./lib/lockedData');
 const globalSettings = require('./lib/globalSettings');
 const moment = require('moment');
 const log = require('electron-log');
-const {app, BrowserWindow, ipcMain, Menu, Tray} = require("electron");
+const {app, BrowserWindow, ipcMain, Menu, Tray, nativeImage} = require("electron");
 const {autoUpdater} = require("electron-updater");
 const isDev = require('electron-is-dev');
 const windowStateKeeper = require('electron-window-state');
+const mkdirp = require('mkdirp');
 
 const updateFeedUrl = "http://timesheethero.cgagnier.ca/";
 
 if(isDev) {
+    mkdirp.sync('./dist');
     log.transports.file.file = 'dist/log-dev.log';
 }
 
@@ -48,27 +50,32 @@ app.on('window-all-closed', function() {
 });
 
 app.on('ready', function () {
+    console.log('App is ready.');
+
 
     var isSavingDone = false;
     var isSaving = false;
     var firstTimeClosing = true;
+
+    var windowIconPath = '';
+    var trayIconPath = '';
+    if (process.platform === 'win32') {
+        windowIconPath = path.join(__dirname, 'icon.ico');
+        trayIconPath = windowIconPath;
+    } else {
+        windowIconPath = path.join(__dirname, 'icon.png');
+        trayIconPath = nativeImage.createFromPath(path.join(__dirname, 'trayIcon.png'));  
+    }
 
     let mainWindowState = windowStateKeeper({
         defaultWidth: 1000,
         defaultHeight: 625
     });
 
-    //Save as unlocked when the app launch as we assume the computer is unlocked
-    lockedData.addData(false, null, function(err, success) {
-        if(err) {
-            throw err;
-        }
-    });
-
     window = new BrowserWindow({
         backgroundColor: '#303030',
         frame: false,
-        icon: path.join(__dirname, 'icon.ico'),
+        icon: windowIconPath,
         minWidth: 325,
         minHeight: 250,
         x: mainWindowState.x,
@@ -79,14 +86,22 @@ app.on('ready', function () {
     });
 
     window.setMenu(null);
-    window.tray = trayIcon;
     window.loadURL(path.join(__dirname, 'views/index.html'));
+    console.log(path.join(__dirname, 'views/index.html'));
     if(isDev) {
         window.openDevTools();
     }
     mainWindowState.manage(window);
     window.show();
 
+    //Save as unlocked when the app launch as we assume the computer is unlocked
+    lockedData.addData(false, null, function(err, success) {
+        if(err) {
+            throw err;
+        }
+    });
+
+    console.log('Starting the time tracker...');
     timeTracker.start();
 
     //TODO: Create a module to handle the autoUpdater
@@ -114,7 +129,8 @@ app.on('ready', function () {
         window.webContents.send('updateDownloaded', ev);
     });
     
-    var trayIcon = new Tray(path.join(__dirname, 'icon.ico'));
+    console.log('Setting up the tray icon...');
+    var trayIcon = new Tray(trayIconPath);
     trayIcon.setToolTip('Timesheet Hero');
     
     var contextMenu = Menu.buildFromTemplate([
@@ -135,6 +151,8 @@ app.on('ready', function () {
     trayIcon.on('click', function() {
         window.show();
     });
+
+    window.tray = trayIcon;
     
     lockedData.on('dataChange', function(date, data) {
         window.webContents.send('lockedDataChange', date.valueOf(), data);
@@ -145,7 +163,7 @@ app.on('ready', function () {
     });
 
     window.on('close', function (event) {
-        if(!app.isQuiting){
+        if(!app.isQuiting  && process.platform === 'win32'){
             event.preventDefault();
             if(firstTimeClosing) {
                 trayIcon.displayBalloon({title: '', content: 'The app is still running in the background.'});
@@ -255,10 +273,13 @@ app.on('ready', function () {
     });
 
     //if(!isDev) {
-        autoUpdater.checkForUpdates();
+        /*autoUpdater.checkForUpdates();
     
         setInterval(function() {
             autoUpdater.checkForUpdates();
         }, 21600000); //6hrs
+        */
     //}
+
+    console.log('App is ready and running!');
 });

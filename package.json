@@ -28,10 +28,11 @@
   "devDependencies": {
     "electron-builder": "^19.7.1",
     "electron-squirrel-startup": "^1.0.0",
-    "electron-winstaller": "^2.6.3"
+    "electron-winstaller": "^2.6.3",
+    "electron": "^1.4.4"
   },
   "scripts": {
-    "start": "electron app\\.",
+    "start": "./node_modules/.bin/electron app/.",
     "rebuild": ".\\app\\node_modules\\.bin\\electron-rebuild.cmd",
     "package": "electron-packager ./app --out=packaged --icon=app/icon.ico --overwrite --asar --win32metadata.ProductName=\"Timesheet Hero\"",
     "pack": "electron-builder --dir",
