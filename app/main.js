@@ -11,6 +11,7 @@ const {autoUpdater} = require("electron-updater");
 const isDev = require('electron-is-dev');
 const windowStateKeeper = require('electron-window-state');
 const mkdirp = require('mkdirp');
+const url = require('url')
 
 const updateFeedUrl = "http://timesheethero.cgagnier.ca/";
 
@@ -44,9 +45,19 @@ if (shouldQuit) {
 
 
 app.on('window-all-closed', function() {
+  //TODO: Quit the window for real on all platform and re-create it when needed
   if (process.platform != 'darwin') {
     app.quit();
   }
+});
+
+app.on('activate', function () {
+    // On OS X it's common to re-create a window in the app when the
+    // dock icon is clicked and there are no other windows open.
+    //if (mainWindow === null) {
+        // TODO: Create a new window
+        //createWindow()
+    //}
 });
 
 app.on('ready', function () {
@@ -86,7 +97,11 @@ app.on('ready', function () {
     });
 
     window.setMenu(null);
-    window.loadURL(path.join(__dirname, 'views/index.html'));
+    window.loadURL(url.format({
+        pathname: path.join(__dirname, 'views/index.html'),
+        protocol: 'file:',
+        slashes: true
+    }))
     console.log(path.join(__dirname, 'views/index.html'));
     if(isDev) {
         window.openDevTools();
