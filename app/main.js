@@ -277,7 +277,7 @@ app.on('ready', function () {
 
     ipcMain.on('windowMaximize', (event) => {
         if(window.isMaximized()) {
-            window.restore();
+            window.unmaximize();
         } else {
             window.maximize();
         }
