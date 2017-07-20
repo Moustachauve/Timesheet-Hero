@@ -1,0 +1,92 @@
+
+.titlebar-controls {
+    float: right;
+    text-align: left;
+}
+
+.titlebar:after,
+.titlebar-controls:after {
+    content: ' ';
+    display: table;
+    clear: both;
+}
+
+.titlebar-minimize,
+.titlebar-resize,
+.titlebar-close {
+    float: left;
+    width: 45px;
+    height: 31px;
+    padding: 1px 1px 0 0;
+    text-align: center;
+    line-height: 29px;
+
+    -webkit-transition: background-color .2s;
+    transition: background-color .2s;
+}
+
+.titlebar.draggable .titlebar-minimize,
+.titlebar.draggable .titlebar-resize,
+.titlebar.draggable .titlebar-close {
+    -webkit-app-region: no-drag;
+}
+
+.titlebar-minimize svg,
+.titlebar-resize svg.maximize-svg,
+.titlebar-resize svg.fullscreen-svg,
+.titlebar-close svg {
+    width: 10px;
+    height: 10px;
+    shape-rendering: crispEdges;
+}
+
+.titlebar-close svg polygon {
+    -webkit-transition: fill .2s;
+    -moz-transition: fill .2s;
+    -ms-transition: fill .2s;
+    -o-transition: fill .2s;
+    transition: fill .2s;
+}
+
+.titlebar-minimize:hover,
+.titlebar-resize:hover,
+.titlebar-fullscreen:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.titlebar-close:hover {
+    background-color: rgba(232, 17, 35, 0.9);
+}
+
+.titlebar-close:hover svg polygon {
+    fill: rgba(255, 255, 255, 1);
+}
+
+.titlebar-light .titlebar-close:hover {
+    fill: rgba(0, 0, 0, 1);
+}
+
+.titlebar-light svg polygon,
+.titlebar-light svg rect,
+.titlebar-light svg > path {
+    fill: rgba(255, 255, 255, 1);
+}
+
+.titlebar-light .titlebar-close:hover {
+    background-color: rgba(232, 17, 35, 0.9);
+}
+
+.titlebar:focus, .titlebar *:focus {
+    outline: none !important;
+}
+
+.md-toolbar-tools h1 {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+@media (max-width: 425px) and (min-width: 0) and (orientation: portrait) {
+    .md-toolbar-tools h1 {
+        font-size: 20px;
+    }
+}

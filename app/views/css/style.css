@@ -12,6 +12,14 @@ body {
     animation: fadein 0.5s;
 }
 
+.titlebar {
+    display: block;
+    position: relative;
+    height: 32px;
+    padding: 0;
+    background: #ffc107;
+}
+
 md-input-container .hint {
     /* Position the hint */
     position: absolute;
