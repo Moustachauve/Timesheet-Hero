@@ -1,17 +1,16 @@
 'use strict';
 
 const path = require("path");
+const moment = require('moment');
+const log = require('electron-log');
+const {app, ipcMain, Menu, Tray, nativeImage} = require("electron");
+const {autoUpdater} = require("electron-updater");
+const isDev = require('electron-is-dev');
+const mkdirp = require('mkdirp');
 const timeTracker = new (require('./lib/timeTracker'))();
 const lockedData = require('./lib/lockedData');
 const globalSettings = require('./lib/globalSettings');
-const moment = require('moment');
-const log = require('electron-log');
-const {app, BrowserWindow, ipcMain, Menu, Tray, nativeImage} = require("electron");
-const {autoUpdater} = require("electron-updater");
-const isDev = require('electron-is-dev');
-const windowStateKeeper = require('electron-window-state');
-const mkdirp = require('mkdirp');
-const url = require('url')
+const windowManager = require('./lib/mainWindow');
 
 const updateFeedUrl = "http://timesheethero.cgagnier.ca/";
 
@@ -24,16 +23,14 @@ console.log = log.info;
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 
-var window = null;
-
 // prevent multiple instances
 var shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) {
-    if (window) {
-        window.show();
-        if (window.isMinimized()) {
-            window.restore();
+    if (mainWindow.browserWindow) {
+        mainWindow.browserWindow.show();
+        if (mainWindow.browserWindow.isMinimized()) {
+            mainWindow.browserWindow.restore();
         }
-        window.focus();
+        mainWindow.browserWindow.focus();
     }
 });
 
@@ -47,7 +44,7 @@ if (shouldQuit) {
 app.on('window-all-closed', function() {
   //TODO: Quit the window for real on all platform and re-create it when needed
   if (process.platform != 'darwin') {
-    app.quit();
+    //app.quit();
   }
 });
 
@@ -63,51 +60,19 @@ app.on('activate', function () {
 app.on('ready', function () {
     console.log('App is ready.');
 
-
     var isSavingDone = false;
     var isSaving = false;
     var firstTimeClosing = true;
 
-    var windowIconPath = '';
     var trayIconPath = '';
     if (process.platform === 'win32') {
-        windowIconPath = path.join(__dirname, 'icon.ico');
-        trayIconPath = windowIconPath;
+        trayIconPath = path.join(__dirname, 'icon.ico');
     } else {
-        windowIconPath = path.join(__dirname, 'icon.png');
         trayIconPath = nativeImage.createFromPath(path.join(__dirname, 'trayIcon.png'));  
     }
 
-    let mainWindowState = windowStateKeeper({
-        defaultWidth: 1000,
-        defaultHeight: 625
-    });
-
-    window = new BrowserWindow({
-        backgroundColor: '#303030',
-        frame: false,
-        icon: windowIconPath,
-        minWidth: 325,
-        minHeight: 250,
-        x: mainWindowState.x,
-        y: mainWindowState.y,
-        width: mainWindowState.width,
-        height: mainWindowState.height,
-        isMaximized: mainWindowState.isMaximized
-    });
-
-    window.setMenu(null);
-    window.loadURL(url.format({
-        pathname: path.join(__dirname, 'views/index.html'),
-        protocol: 'file:',
-        slashes: true
-    }))
-    console.log(path.join(__dirname, 'views/index.html'));
-    if(isDev) {
-        window.openDevTools();
-    }
-    mainWindowState.manage(window);
-    window.show();
+    windowManager.init();
+    windowManager.createWindow();
 
     //Save as unlocked when the app launch as we assume the computer is unlocked
     lockedData.addData(false, null, function(err, success) {
@@ -128,7 +93,7 @@ app.on('ready', function () {
     })
     autoUpdater.on('update-not-available', (ev, info) => {
         console.log('Update not available.');
-        window.webContents.send('updateNotAvailable');
+        windowManager.browserWindow.webContents.send('updateNotAvailable');
     })
     autoUpdater.on('error', (ev, err) => {
         console.log('Error in auto-updater.');
@@ -141,7 +106,7 @@ app.on('ready', function () {
     })
     autoUpdater.on('update-downloaded', (ev) => {
         console.log('Update downloaded');
-        window.webContents.send('updateDownloaded', ev);
+        windowManager.webContents.send('updateDownloaded', ev);
     });
     
     console.log('Setting up the tray icon...');
@@ -151,68 +116,52 @@ app.on('ready', function () {
     var contextMenu = Menu.buildFromTemplate([
         { 
             label: 'Show App', checked: true, click:  function() {
-                window.show();
+                windowManager.createWindow();
             } 
         },
         { 
             label: 'Quit', click:  function() {
                 app.isQuiting = true;
+                windowManager.browserWindow.close();
                 timeTracker.stop();
-                app.quit();
+                if(!isSaving && !isSavingDone) {
+                    isSaving = true;
+                    lockedData.addData(true, null, function(err, success) {
+                        if(err) {
+                            throw err;
+                        }
+                        isSaving = false;
+                        isSavingDone = true;
+                        timeTracker.stop();
+                        app.quit();
+                    });
+                }
             } 
         }
     ]);
     trayIcon.setContextMenu(contextMenu);
     trayIcon.on('click', function() {
-        window.show();
+        windowManager.createWindow();
     });
 
-    window.tray = trayIcon;
+    windowManager.browserWindow.tray = trayIcon;
     
     lockedData.on('dataChange', function(date, data) {
-        window.webContents.send('lockedDataChange', date.valueOf(), data);
+        windowManager.browserWindow.webContents.send('lockedDataChange', date.valueOf(), data);
     });
     globalSettings.on('dataChange', function(date, data) {
-        window.webContents.send('globalSettingsChange', data);
+        windowManager.browserWindow.webContents.send('globalSettingsChange', data);
         console.log('settings changed');
     });
 
-    window.on('close', function (event) {
+    windowManager.on('windowClosed', function (event) {
         if(!app.isQuiting  && process.platform === 'win32'){
-            event.preventDefault();
             if(firstTimeClosing) {
                 trayIcon.displayBalloon({title: '', content: 'The app is still running in the background.'});
+
                 firstTimeClosing = false;
             }
-            window.hide();
-            return false;
-        } 
-        if(isSaving || !isSavingDone) {
-            event.preventDefault();
         }
-
-        if(!isSaving && !isSavingDone) {
-            isSaving = true;
-            lockedData.addData(true, null, function(err, success) {
-                if(err) {
-                    throw err;
-                }
-                isSaving = false;
-                isSavingDone = true;
-                timeTracker.stop();
-                app.quit();
-            });
-        } 
-        
-        return false;
-    });
-
-    window.on('maximize', function(event) {
-        window.webContents.send('windowMaximize');
-    });
-
-    window.on('unmaximize', function(event) {
-        window.webContents.send('windowUnmaximize');
     });
 
     ipcMain.on('setTimeOff', (event, dateMs, timeOff) => {
@@ -272,28 +221,28 @@ app.on('ready', function () {
     });
 
     ipcMain.on('windowMinimize', (event) => {
-        window.minimize();
+        windowManager.browserWindow.minimize();
     });
 
     ipcMain.on('windowMaximize', (event) => {
-        if(window.isMaximized()) {
-            window.unmaximize();
+        if(windowManager.browserWindow.isMaximized()) {
+            windowManager.browserWindow.unmaximize();
         } else {
-            window.maximize();
+            windowManager.browserWindow.maximize();
         }
     });
 
     ipcMain.on('windowClose', (event) => {
-        window.hide();
+        windowManager.browserWindow.close();
     });
 
     //if(!isDev) {
-        /*autoUpdater.checkForUpdates();
+        autoUpdater.checkForUpdates();
     
         setInterval(function() {
             autoUpdater.checkForUpdates();
         }, 21600000); //6hrs
-        */
+        
     //}
 
     console.log('App is ready and running!');
