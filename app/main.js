@@ -72,7 +72,13 @@ app.on('ready', function () {
     }
 
     windowManager.init();
-    windowManager.createWindow();
+
+    console.log('Setting up the tray icon...');
+    var trayIcon = new Tray(trayIconPath);
+    trayIcon.setToolTip('Timesheet Hero');
+
+    console.log('Creating the main window...');
+    windowManager.createWindow(trayIcon);
 
     //Save as unlocked when the app launch as we assume the computer is unlocked
     lockedData.addData(false, null, function(err, success) {
@@ -93,7 +99,7 @@ app.on('ready', function () {
     })
     autoUpdater.on('update-not-available', (ev, info) => {
         console.log('Update not available.');
-        windowManager.browserWindow.webContents.send('updateNotAvailable');
+        windowManager.sendToRenderer('updateNotAvailable');
     })
     autoUpdater.on('error', (ev, err) => {
         console.log('Error in auto-updater.');
@@ -109,10 +115,6 @@ app.on('ready', function () {
         windowManager.webContents.send('updateDownloaded', ev);
     });
     
-    console.log('Setting up the tray icon...');
-    var trayIcon = new Tray(trayIconPath);
-    trayIcon.setToolTip('Timesheet Hero');
-    
     var contextMenu = Menu.buildFromTemplate([
         { 
             label: 'Show App', checked: true, click:  function() {
@@ -122,7 +124,7 @@ app.on('ready', function () {
         { 
             label: 'Quit', click:  function() {
                 app.isQuiting = true;
-                windowManager.browserWindow.close();
+                windowManager.closeWindow();
                 timeTracker.stop();
                 if(!isSaving && !isSavingDone) {
                     isSaving = true;
@@ -141,23 +143,21 @@ app.on('ready', function () {
     ]);
     trayIcon.setContextMenu(contextMenu);
     trayIcon.on('click', function() {
-        windowManager.createWindow();
+        windowManager.createWindow(trayIcon);
     });
-
-    windowManager.browserWindow.tray = trayIcon;
     
     lockedData.on('dataChange', function(date, data) {
-        windowManager.browserWindow.webContents.send('lockedDataChange', date.valueOf(), data);
+        windowManager.sendToRenderer('lockedDataChange', date.valueOf(), data);
     });
     globalSettings.on('dataChange', function(date, data) {
-        windowManager.browserWindow.webContents.send('globalSettingsChange', data);
+        windowManager.sendToRenderer('globalSettingsChange', data);
         console.log('settings changed');
     });
 
     windowManager.on('windowClosed', function (event) {
         if(!app.isQuiting  && process.platform === 'win32'){
             if(firstTimeClosing) {
-                trayIcon.displayBalloon({title: '', content: 'The app is still running in the background.'});
+                trayIcon.displayBalloon({title: 'abc', content: 'The app is still running in the background.'});
 
                 firstTimeClosing = false;
             }
@@ -233,7 +233,7 @@ app.on('ready', function () {
     });
 
     ipcMain.on('windowClose', (event) => {
-        windowManager.browserWindow.close();
+        windowManager.closeWindow();
     });
 
     //if(!isDev) {

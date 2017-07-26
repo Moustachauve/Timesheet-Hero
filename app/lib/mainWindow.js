@@ -28,8 +28,8 @@ windowManager.init = function() {
     });
 };
 
-windowManager.createWindow = function() {
-    if(windowManager.browserWindow && !windowManager.browserWindow.isDestroyed()) {
+windowManager.createWindow = function(trayIcon) {
+    if(windowManager.isWindowCreated()) {
         windowManager.browserWindow.show();
         console.log('window already exists');
         return;
@@ -46,6 +46,10 @@ windowManager.createWindow = function() {
         height: mainWindowState.height,
         isMaximized: mainWindowState.isMaximized
     });
+
+    if(trayIcon) {
+        windowManager.trayIcon = trayIcon;
+    }
 
     windowManager.browserWindow.setMenu(null);
     windowManager.browserWindow.loadURL(url.format({
@@ -66,10 +70,26 @@ windowManager.createWindow = function() {
     });
 
     windowManager.browserWindow.on('maximize', function(event) {
-        windowManager.browserWindow.webContents.send('windowMaximize');
+        windowManager.sendToRenderer('windowMaximize');
     });
 
     windowManager.browserWindow.on('unmaximize', function(event) {
-        windowManager.browserWindow.webContents.send('windowUnmaximize');
+        windowManager.sendToRenderer('windowUnmaximize');
     });
 };
+
+windowManager.closeWindow = function() {
+    if(windowManager.isWindowCreated()) {
+        windowManager.browserWindow.close();
+    }
+}
+
+windowManager.sendToRenderer = function(channel, ...args) {
+    if(windowManager.isWindowCreated()) {
+        windowManager.browserWindow.webContents.send(channel, args);
+    }
+}
+
+windowManager.isWindowCreated = function() {
+    return windowManager.browserWindow && !windowManager.browserWindow.isDestroyed();
+}
