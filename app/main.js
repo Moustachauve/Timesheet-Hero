@@ -10,7 +10,8 @@ const mkdirp = require('mkdirp');
 const timeTracker = new (require('./lib/timeTracker'))();
 const lockedData = require('./lib/lockedData');
 const globalSettings = require('./lib/globalSettings');
-const windowManager = require('./lib/mainWindow');
+const windowManager = require('./lib/windowManager');
+const notifier = require('node-notifier');
 
 const updateFeedUrl = "http://timesheethero.cgagnier.ca/";
 
@@ -25,12 +26,8 @@ autoUpdater.logger.transports.file.level = 'info';
 
 // prevent multiple instances
 var shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) {
-    if (mainWindow.browserWindow) {
-        mainWindow.browserWindow.show();
-        if (mainWindow.browserWindow.isMinimized()) {
-            mainWindow.browserWindow.restore();
-        }
-        mainWindow.browserWindow.focus();
+    if (windowManager) {
+        windowManager.createWindow();
     }
 });
 
@@ -56,6 +53,9 @@ app.on('activate', function () {
     }
 });
 
+var trayIcon;
+var trayIconPath = '';
+
 app.on('ready', function () {
     console.log('App is ready.');
 
@@ -63,7 +63,6 @@ app.on('ready', function () {
     var isSaving = false;
     var firstTimeClosing = true;
 
-    var trayIconPath = '';
     if (process.platform === 'win32') {
         trayIconPath = path.join(__dirname, 'icon.ico');
     } else {
@@ -73,8 +72,38 @@ app.on('ready', function () {
     windowManager.init();
 
     console.log('Setting up the tray icon...');
-    var trayIcon = new Tray(path.join(__dirname, 'trayIcon.png'));
+    trayIcon = new Tray(trayIconPath);
     trayIcon.setToolTip('Timesheet Hero');
+        var contextMenu = Menu.buildFromTemplate([
+        { 
+            label: 'Show App', checked: true, click:  function() {
+                windowManager.createWindow();
+            } 
+        },
+        { 
+            label: 'Quit', click:  function() {
+                app.isQuiting = true;
+                windowManager.closeWindow();
+                timeTracker.stop();
+                if(!isSaving && !isSavingDone) {
+                    isSaving = true;
+                    lockedData.addData(true, null, function(err, success) {
+                        if(err) {
+                            throw err;
+                        }
+                        isSaving = false;
+                        isSavingDone = true;
+                        timeTracker.stop();
+                        app.quit();
+                    });
+                }
+            } 
+        }
+    ]);
+    trayIcon.setContextMenu(contextMenu);
+    trayIcon.on('click', function() {
+        windowManager.createWindow();
+    });
 
     console.log('Creating the main window...');
     windowManager.createWindow();
@@ -114,37 +143,6 @@ app.on('ready', function () {
         windowManager.webContents.send('updateDownloaded', ev);
     });
     
-    var contextMenu = Menu.buildFromTemplate([
-        { 
-            label: 'Show App', checked: true, click:  function() {
-                windowManager.createWindow();
-            } 
-        },
-        { 
-            label: 'Quit', click:  function() {
-                app.isQuiting = true;
-                windowManager.closeWindow();
-                timeTracker.stop();
-                if(!isSaving && !isSavingDone) {
-                    isSaving = true;
-                    lockedData.addData(true, null, function(err, success) {
-                        if(err) {
-                            throw err;
-                        }
-                        isSaving = false;
-                        isSavingDone = true;
-                        timeTracker.stop();
-                        app.quit();
-                    });
-                }
-            } 
-        }
-    ]);
-    trayIcon.setContextMenu(contextMenu);
-    trayIcon.on('click', function() {
-        windowManager.createWindow();
-    });
-    
     lockedData.on('dataChange', function(date, data) {
         windowManager.sendToRenderer('lockedDataChange', date.valueOf(), data);
     });
@@ -156,7 +154,11 @@ app.on('ready', function () {
     windowManager.on('windowClosed', function (event) {
         if(!app.isQuiting  && process.platform === 'win32'){
             if(firstTimeClosing) {
-                trayIcon.displayBalloon({title: '', content: 'The app is still running in the background.'});
+                notifier.notify({
+                    title: 'Timesheet Hero',
+                    message: 'The app is still running in the background.',
+                    icon: trayIconPath 
+                });
 
                 firstTimeClosing = false;
             }
@@ -206,7 +208,11 @@ app.on('ready', function () {
     });
 
     ipcMain.on('notify', (event, title, content) => {
-        trayIcon.displayBalloon({title: title, content: content});
+        notifier.notify({
+            title: title ? title : 'Timesheet Hero',
+            message: content,
+            icon: trayIconPath 
+        });
     });
 
     ipcMain.on('checkForUpdates', (event, title) => {
