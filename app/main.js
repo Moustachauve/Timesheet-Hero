@@ -51,10 +51,9 @@ app.on('window-all-closed', function() {
 app.on('activate', function () {
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    //if (mainWindow === null) {
-        // TODO: Create a new window
-        //createWindow()
-    //}
+    if (!windowManager.isWindowCreated()) {
+        windowManager.createWindow();
+    }
 });
 
 app.on('ready', function () {
@@ -74,11 +73,11 @@ app.on('ready', function () {
     windowManager.init();
 
     console.log('Setting up the tray icon...');
-    var trayIcon = new Tray(trayIconPath);
+    var trayIcon = new Tray(path.join(__dirname, 'trayIcon.png'));
     trayIcon.setToolTip('Timesheet Hero');
 
     console.log('Creating the main window...');
-    windowManager.createWindow(trayIcon);
+    windowManager.createWindow();
 
     //Save as unlocked when the app launch as we assume the computer is unlocked
     lockedData.addData(false, null, function(err, success) {
@@ -143,7 +142,7 @@ app.on('ready', function () {
     ]);
     trayIcon.setContextMenu(contextMenu);
     trayIcon.on('click', function() {
-        windowManager.createWindow(trayIcon);
+        windowManager.createWindow();
     });
     
     lockedData.on('dataChange', function(date, data) {
@@ -157,7 +156,7 @@ app.on('ready', function () {
     windowManager.on('windowClosed', function (event) {
         if(!app.isQuiting  && process.platform === 'win32'){
             if(firstTimeClosing) {
-                trayIcon.displayBalloon({title: 'abc', content: 'The app is still running in the background.'});
+                trayIcon.displayBalloon({title: '', content: 'The app is still running in the background.'});
 
                 firstTimeClosing = false;
             }

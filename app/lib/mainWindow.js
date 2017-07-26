@@ -28,7 +28,7 @@ windowManager.init = function() {
     });
 };
 
-windowManager.createWindow = function(trayIcon) {
+windowManager.createWindow = function() {
     if(windowManager.isWindowCreated()) {
         windowManager.browserWindow.show();
         console.log('window already exists');
@@ -46,10 +46,6 @@ windowManager.createWindow = function(trayIcon) {
         height: mainWindowState.height,
         isMaximized: mainWindowState.isMaximized
     });
-
-    if(trayIcon) {
-        windowManager.trayIcon = trayIcon;
-    }
 
     windowManager.browserWindow.setMenu(null);
     windowManager.browserWindow.loadURL(url.format({
