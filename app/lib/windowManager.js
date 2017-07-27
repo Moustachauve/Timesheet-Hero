@@ -31,7 +31,6 @@ windowManager.init = function() {
 windowManager.createWindow = function() {
     if(windowManager.isWindowCreated()) {
         windowManager.browserWindow.show();
-        console.log('window already exists');
         return;
     }
     windowManager.browserWindow = new BrowserWindow({
@@ -76,7 +75,7 @@ windowManager.createWindow = function() {
 
 windowManager.closeWindow = function() {
     if(windowManager.isWindowCreated()) {
-        windowManager.browserWindow.close();
+        windowManager.browserWindow.hide();
     }
 }
 
