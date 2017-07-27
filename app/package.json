@@ -4,7 +4,7 @@
   "description": "Helps you keep track of your time.",
   "author": "Christophe Gagnier",
   "private": true,
-  "version": "1.2.2",
+  "version": "1.2.3",
   "main": "main.js",
   "dependencies": {
     "angular": "^1.6.4",
