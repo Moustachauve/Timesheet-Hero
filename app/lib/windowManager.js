@@ -81,7 +81,7 @@ windowManager.closeWindow = function() {
 
 windowManager.sendToRenderer = function(channel, ...args) {
     if(windowManager.isWindowCreated()) {
-        windowManager.browserWindow.webContents.send(channel, args);
+        windowManager.browserWindow.webContents.send(channel, ...args);
     }
 }
 
