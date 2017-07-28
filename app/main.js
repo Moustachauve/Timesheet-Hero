@@ -105,11 +105,12 @@ app.on('ready', function () {
         windowManager.createWindow();
     });
 
-    console.log('Creating the main window...');
-    windowManager.createWindow();
-
     //Save as unlocked when the app launch as we assume the computer is unlocked
+    console.log('Saving unlock...');
     lockedData.addData(false, null, function(err, success) {
+        console.log('Creating the main window...');
+        windowManager.createWindow();
+
         if(err) {
             throw err;
         }

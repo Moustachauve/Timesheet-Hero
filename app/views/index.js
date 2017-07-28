@@ -286,6 +286,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     }
 
     function processWeekInformation(date, data) {
+        debugger;
         if(!date) {
             date = moment().startOf('isoWeek');
         }
@@ -509,6 +510,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     }
 
     ipcRenderer.on('lockedDataChange', function(event, date, data) {
+        console.log('locked data changed');
         date = moment(date);
         if($scope.selectedWeek.isSame(moment(date).startOf('isoWeek'), 'day')) {
             processWeekInformation(date, data);
