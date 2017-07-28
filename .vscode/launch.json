@@ -7,15 +7,13 @@
         {
             "type": "node",
             "request": "launch",
-            "protocol": "legacy",
             "name": "Launch Program",
-            "program": "${workspaceRoot}\\main.js",
-            "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd",
+            "program": "${workspaceRoot}\\app\\main.js",
+            "runtimeExecutable": "${workspaceRoot}\\node_modules\\.bin\\electron.cmd",
             "runtimeArgs": [
-                "."
-            ],
-            "env": {},
-            "console": "integratedTerminal",
+                "app\\.",
+                "--enable-logging"
+            ]
         }
     ]
 }

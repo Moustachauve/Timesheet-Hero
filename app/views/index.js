@@ -286,7 +286,6 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     }
 
     function processWeekInformation(date, data) {
-        debugger;
         if(!date) {
             date = moment().startOf('isoWeek');
         }

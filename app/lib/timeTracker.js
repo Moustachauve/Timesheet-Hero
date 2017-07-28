@@ -1,5 +1,7 @@
 'use strict'
 
+const lockedData = require('./lockedData');
+
 if(process.platform === 'win32') {
     var sessionStateDetecor = require('./windows/sessionStateDetector');
 } else if (process.platform === 'darwin') {
@@ -8,8 +10,6 @@ if(process.platform === 'win32') {
     console.error('Unsuported platform: ' + process.platform);
     throw 'Sorry, your system is not supported. Only Windows and MacOS are supported.';
 }
-
-var lockedData = require('./lockedData');
 
 module.exports = function() {
 
@@ -22,12 +22,10 @@ module.exports = function() {
 
     function onStateChange(state) {
         console.log('state changed: ', state);
-        lockedData.addData(isSessionLocked, null, function(err, success) {
+        lockedData.addData(state, null, function(err, success) {
             if(err) {
                 throw err;
             }
-
-            console.log('success?', success);
         });
     }
 }
