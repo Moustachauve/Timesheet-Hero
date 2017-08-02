@@ -449,7 +449,11 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
         if($scope.totals.totalPercent >= 100) {
             $scope.totals.totalClass = 'done';
         } else {
-            $scope.totals.totalClass = 'not-done';
+            if(isCurrentWeekSelected) {
+                $scope.totals.totalClass = 'progressing';
+            } else {
+                $scope.totals.totalClass = 'not-done';
+            }
         }
         $scope.totals.totalLeft = timeLeft;
     }
