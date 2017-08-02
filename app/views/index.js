@@ -49,6 +49,8 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     var isCurrentWeekSelected = true;
     var previousDayToday = moment();
 
+    $scope.appVersion = remote.app.getVersion();
+
     $scope.isWindowMaximized = false;
 
     $scope.dateFormat = DATE_FORMAT;
