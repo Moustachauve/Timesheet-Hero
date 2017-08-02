@@ -89,11 +89,13 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     startInterval();
 
     $scope.changePauseTime = function(key) {
-        $scope.processedData.days[key].time.pause = $scope.selectedDayDetails.day.time.pause;
+        var hours = $scope.selectedDayDetails.pausePart.hours || 0;
+        var minutes = ($scope.selectedDayDetails.pausePart.minutes || 0) / 60;
+        $scope.processedData.days[key].time.pause = hours + minutes;
         ipcRenderer.send('setTimeOff', $scope.processedData.days[key].date.valueOf(), $scope.processedData.days[key].time.pause);
         calculateTotal();
         refreshDayInfo();
-        $scope.selectedDayDetails = {key: key, day: $scope.processedData.days[key]};
+        setSelectedDayDetails(key);
     }
 
     $scope.setDayOff = function(key) {
@@ -101,7 +103,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
         ipcRenderer.send('setDayOff', $scope.processedData.days[key].date.valueOf(), $scope.processedData.days[key].isOff);
         calculateTotal();
         refreshDayInfo();
-        $scope.selectedDayDetails = {key: key, day: $scope.processedData.days[key]};
+        setSelectedDayDetails(key);
     }
 
     $scope.setOverrideStartTime = function(key) {
@@ -109,7 +111,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
         ipcRenderer.send('setOverrideStartTime', $scope.processedData.days[key].date.valueOf(), $scope.processedData.days[key].overrideStartTime);
         calculateTotal();
         refreshDayInfo();
-        $scope.selectedDayDetails = {key: key, day: $scope.processedData.days[key]};
+        setSelectedDayDetails(key);
     }
 
     $scope.setOverrideStopTime = function(key) {
@@ -117,7 +119,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
         ipcRenderer.send('setOverrideStopTime', $scope.processedData.days[key].date.valueOf(), $scope.processedData.days[key].overrideStopTime);
         calculateTotal();
         refreshDayInfo();
-        $scope.selectedDayDetails = {key: key, day: $scope.processedData.days[key]};
+        setSelectedDayDetails(key);
     }
 
     $scope.showSettings = function(ev) {
@@ -136,7 +138,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     };
 
     $scope.showDayDetails = function(ev, key, day) {
-        $scope.selectedDayDetails = {key: key, day: day};
+        setSelectedDayDetails(key);
 
         $mdDialog.show({
             templateUrl: 'dayDetails.dialog.html',
@@ -514,6 +516,22 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
         });
     }
 
+    function setSelectedDayDetails(key) {
+        var day = $scope.processedData.days[key];
+
+        var minutes = (day.time.pause % 1) * 60;
+        var hours = Math.trunc(day.time.pause);
+
+        $scope.selectedDayDetails = {
+            key: key, 
+            day: day,
+            pausePart: {
+                hours: hours,
+                minutes: Math.round(minutes)
+            }
+        };
+    }
+
     ipcRenderer.on('lockedDataChange', function(event, date, data) {
         console.log('locked data changed');
         date = moment(date);
@@ -582,15 +600,19 @@ app.filter('formatMomentTimeDurationMS', function() {
     };
 });
 
+function formatHours(hours) {
+    if(hours) {
+        var momentTime = moment.duration(hours, 'hours');
+        var hours = momentTime.hours() + (momentTime.days() * 24);
+        return formatIntTwoDigits(hours) + ":" + formatIntTwoDigits(momentTime.minutes());
+    }
+    return '--:--';
+}
+
 app.filter('formatHours', function() {
     return function (hours) {
-        if(hours) {
-            var momentTime = moment.duration(hours, 'hours');
-            var hours = momentTime.hours() + (momentTime.days() * 24);
-            return formatIntTwoDigits(hours) + ":" + formatIntTwoDigits(momentTime.minutes()) + ":" + formatIntTwoDigits(momentTime.seconds());
-        }
-        return '--:--:--';
-    };
+         return formatHours(hours);
+    }
 });
 
 function formatIntTwoDigits(integer) {
@@ -663,4 +685,39 @@ function WeekPlanController($scope, $mdDialog) {
 
         return total;
     }
+}
+
+app.directive('hoursInput', function() {
+    return {
+        require: 'ngModel',
+        link: function(scope, element, attrs, ngModel) {
+            ngModel.$parsers.push(function(value) {
+                var val = stringToHours(value);
+                console.log('parser', val);
+                return value - 1;
+            });
+
+            ngModel.$formatters.push(function(value) {
+                var val = formatHours(value);
+                console.log('formatter', val);
+                return value + 1;
+            });
+        }
+    }
+});
+
+function stringToHours(stringTime) {
+    if(!isNaN(stringTime)) {
+        return stringTime;
+    }
+
+    var splitted = data.split(':');
+    if(splitted[0] == '--') {
+        return 0;
+    }
+
+    var hours = splitted[0];
+    hours += splitted[1] / 60;
+    console.log(hours);
+    return hours; //converted
 }

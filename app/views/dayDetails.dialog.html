@@ -14,11 +14,17 @@
             
             <div class="md-subhead">Time off</div>
             <div layout="row" layout-align="space-between center">
-                <md-input-container class="small-input" flex>
-                    <label>Pause Time</label>
-                    <input type="number" step="0.5" ng-model="selectedDayDetails.day.time.pause" ng-disabled="selectedDayDetails.day.isFuture" ng-change="changePauseTime(selectedDayDetails.key)">
-                    <div class="hint">In hours</div>
-                </md-input-container>
+                <div layout="row">
+                    <md-input-container class="small-input" flex md-no-float>
+                        <label>Pause Time</label>
+                        <input placeholder="0" type="number" step="1" ng-model="selectedDayDetails.pausePart.hours" ng-disabled="selectedDayDetails.day.isFuture" ng-change="changePauseTime(selectedDayDetails.key)">
+                        <div class="hint">Hours</div>
+                    </md-input-container>
+                    <md-input-container class="small-input" flex md-no-float>
+                        <input placeholder="0" type="number" step="1" min="0" max="59" ng-model="selectedDayDetails.pausePart.minutes" ng-disabled="selectedDayDetails.day.isFuture" ng-change="changePauseTime(selectedDayDetails.key)">
+                        <div class="hint">Minutes</div>
+                    </md-input-container>
+                </div>
                 <md-switch ng-model="selectedDayDetails.day.isOff" ng-change="setDayOff(selectedDayDetails.key)" flex>
                     Day Off: {{ selectedDayDetails.day.isOff ? 'Yes' : 'No' }}
                 </md-switch>
