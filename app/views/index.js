@@ -448,6 +448,8 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
         $scope.totals.totalPercent = ($scope.totals.totalWeekly / ($scope.hoursToWork * 60 * 60 * 1000)) * 100;
         if($scope.totals.totalPercent >= 100) {
             $scope.totals.totalClass = 'done';
+        } else {
+            $scope.totals.totalClass = 'not-done';
         }
         $scope.totals.totalLeft = timeLeft;
     }
