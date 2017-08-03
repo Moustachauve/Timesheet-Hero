@@ -15,7 +15,7 @@ const globalSettings = require('../lib/globalSettings');
 var titleBarDrag = drag('#titleBar');
 
 var oldConsoleLog = console.log;
-/*console.log = function() {
+console.log = function() {
     if(arguments && arguments[0]) {
         arguments[0] = '[renderer] ' + arguments[0];
     } else {
@@ -23,7 +23,7 @@ var oldConsoleLog = console.log;
     }
 
     log.info(...arguments);
-}*/
+}
 
 const DATE_FORMAT = 'YYYY-MM-DD';
 
@@ -58,7 +58,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
 
     $scope.selectedWeekCalendar = $scope.selectedWeek = moment().startOf('isoWeek');
     $scope.weekDays = [];
-    $scope.hoursToWork = 0;
+    $scope.hoursToWork = {time: 0, hours: 0, minutes: 0};
     $scope.processedData = {};
     $scope.weekPlan = [];
     $scope.totals = {
@@ -80,7 +80,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
 
     globalSettings.load(function(err, data) {
         console.log('loaded global settings, loading locked data...');
-        $scope.globalSettings = data;
+        applyGlobalSettings(data);
         lockedData.load($scope.selectedWeek, function(err, data) {
             console.log('locked data loaded.');
             processWeekInformation(null, data);
@@ -200,17 +200,27 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     }
     
     $scope.setHoursToWork = function(key) {
-        ipcRenderer.send('setHoursToWork', $scope.selectedWeek.valueOf(), $scope.hoursToWork);
+        var hours = $scope.hoursToWork.hours || 0;
+        var minutes = +((($scope.hoursToWork.minutes || 0) / 60).toFixed(2));
+        $scope.hoursToWork.time = hours + minutes;
+        ipcRenderer.send('setHoursToWork', $scope.selectedWeek.valueOf(), $scope.hoursToWork.time);
         calculateTotal();
         refreshDayInfo();
     }
     
     $scope.setDefaultHoursToWork = function(key) {
-        globalSettings.set('defaultHoursToWork', $scope.globalSettings.defaultHoursToWork);
+        var hours = $scope.globalSettings.defaultHoursToWork.hours || 0;
+        var minutes = +((($scope.globalSettings.defaultHoursToWork.minutes || 0) / 60).toFixed(2));
+        $scope.globalSettings.defaultHoursToWork.time = hours + minutes;
+        globalSettings.set('defaultHoursToWork', $scope.globalSettings.defaultHoursToWork.time);
     }
     
     $scope.setDefaultTimeOff = function(key) {
-        globalSettings.set('defaultTimeOff', $scope.globalSettings.defaultTimeOff);
+        var hours = $scope.globalSettings.defaultTimeOff.hours || 0;
+        var minutes = +((($scope.globalSettings.defaultTimeOff.minutes || 0) / 60).toFixed(2));
+        $scope.globalSettings.defaultTimeOff.time = hours + minutes;
+
+        globalSettings.set('defaultTimeOff', $scope.globalSettings.defaultTimeOff.time);
     }
 
     $scope.saveWeekPlan = function() {
@@ -223,7 +233,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
                     time: $scope.weekPlan[dayPlan].time
                 }
             }
-            //console.log('saving week plan');
+            console.log('saving week plan');
             ipcRenderer.send('saveWeekPlan', $scope.selectedWeek.valueOf(), weekPlan);
         }, 500);
     }
@@ -302,7 +312,14 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
         var today = moment().format($scope.dateFormat);
         var isFuture = false;
 
-        $scope.hoursToWork = data.hoursToWork;
+        var minutes = (data.hoursToWork % 1) * 60;
+        var hours = Math.trunc(data.hoursToWork);
+
+        $scope.hoursToWork = {
+            time: data.hoursToWork,
+            hours: hours,
+            minutes: Math.round(minutes)
+        };
         $scope.weekPlan = data.weekPlan;
 
         for(var i = 0; i < 7; i++) {
@@ -442,14 +459,14 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
             }
         }
 
-        var timeLeft = moment.duration($scope.hoursToWork, 'hours').subtract($scope.totals.totalWeekly);
+        var timeLeft = moment.duration($scope.hoursToWork.time, 'hours').subtract($scope.totals.totalWeekly);
 
-        if(!$scope.processedData.notified && timeLeft.hours() >= $scope.hoursToWork) {
+        if(!$scope.processedData.notified && timeLeft.hours() >= $scope.hoursToWork.time) {
             $scope.processedData.notified = true;
             ipcRenderer.send('notify', '', 'You worked enough hours for the week.');
         }
 
-        $scope.totals.totalPercent = ($scope.totals.totalWeekly / ($scope.hoursToWork * 60 * 60 * 1000)) * 100;
+        $scope.totals.totalPercent = ($scope.totals.totalWeekly / ($scope.hoursToWork.time * 60 * 60 * 1000)) * 100;
         if($scope.totals.totalPercent >= 100) {
             $scope.totals.totalClass = 'done';
         } else {
@@ -534,6 +551,28 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
         };
     }
 
+    function applyGlobalSettings(data) {
+        var minutes = (data.defaultHoursToWork % 1) * 60;
+        var hours = Math.trunc(data.defaultHoursToWork);
+
+        data.defaultHoursToWork = {
+            time: data.defaultHoursToWork,
+            hours: hours,
+            minutes: Math.round(minutes),
+        };
+
+        minutes = (data.defaultTimeOff % 1) * 60;
+        hours = Math.trunc(data.defaultTimeOff);
+
+        data.defaultTimeOff = {
+            time: data.defaultTimeOff,
+            hours: hours,
+            minutes: Math.round(minutes),
+        };
+
+         $scope.globalSettings = data;
+    }
+
     ipcRenderer.on('lockedDataChange', function(event, date, data) {
         console.log('locked data changed');
         date = moment(date);
@@ -542,7 +581,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
         }
     });
     ipcRenderer.on('globalSettingsChange', function(event, data) {
-        $scope.globalSettings = data;
+        applyGlobalSettings(data);
         $scope.$apply();
     });
 
@@ -604,11 +643,8 @@ app.filter('formatMomentTimeDurationMS', function() {
 
 function formatHours(hours) {
     if(hours) {       
-        var minutes = hours % 1;
-        var hours = hours - minutes;
-        //console.log(minutes)
-        minutes = minutes * 60;
-        console.log(formatIntTwoDigits(minutes))
+        var minutes = (hours % 1) * 60;
+        var hours = Math.trunc(hours);
         return formatIntTwoDigits(hours) + ":" + formatIntTwoDigits(minutes);
     }
     return '--:--';
@@ -691,39 +727,4 @@ function WeekPlanController($scope, $mdDialog) {
 
         return total;
     }
-}
-
-app.directive('hoursInput', function() {
-    return {
-        require: 'ngModel',
-        link: function(scope, element, attrs, ngModel) {
-            ngModel.$parsers.push(function(value) {
-                var val = stringToHours(value);
-                console.log('parser', val);
-                return value - 1;
-            });
-
-            ngModel.$formatters.push(function(value) {
-                var val = formatHours(value);
-                console.log('formatter', val);
-                return value + 1;
-            });
-        }
-    }
-});
-
-function stringToHours(stringTime) {
-    if(!isNaN(stringTime)) {
-        return stringTime;
-    }
-
-    var splitted = data.split(':');
-    if(splitted[0] == '--') {
-        return 0;
-    }
-
-    var hours = splitted[0];
-    hours += splitted[1] / 60;
-    console.log(hours);
-    return hours; //converted
 }

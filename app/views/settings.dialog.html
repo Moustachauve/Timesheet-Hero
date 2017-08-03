@@ -15,31 +15,51 @@
                 <md-tab label="Current Week Settings">
                     <md-content class="md-padding">
                         <div layout-gt-xs="row">
-                            <md-input-container>
-                                <label>Week</label>
+                            <md-input-container class="displayed-week-input">
+                                <label>Displayed Week</label>
                                 <md-datepicker ng-model="selectedWeekCalendar" md-date-filter="isDateSelectionnable" ng-change="setSelectedWeek()"></md-datepicker>
                             </md-input-container>
-                            <md-input-container>
-                                <label>Hours to work</label>
-                                <input ng-model="hoursToWork" type="number" step="0.5" ng-change="setHoursToWork()">
-                                <div class="hint">In hours</div>
-                            </md-input-container>
+
+                            <div layout="row">
+                                <md-input-container class="small-input" flex md-no-float>
+                                    <label>Hours to Work</label>
+                                    <input placeholder="0" type="number" step="1" ng-model="hoursToWork.hours" ng-change="setHoursToWork()">
+                                    <div class="hint">Hours</div>
+                                </md-input-container>
+                                <md-input-container class="small-input" flex md-no-float>
+                                    <input placeholder="0" type="number" step="1" min="0" max="59" ng-model="hoursToWork.minutes" ng-change="setHoursToWork()">
+                                    <div class="hint">Minutes</div>
+                                </md-input-container>
+                            </div>
                         </div>
                     </md-content>
                 </md-tab>
                 <md-tab label="Global Settings">
                     <md-content class="md-padding">
+                        <div class="md-subhead">Default Values</div>
                         <div layout-gt-xs="row">
-                            <md-input-container>
-                                <label>Default Pause Time</label>
-                                <input ng-model="globalSettings.defaultTimeOff" type="number" step="0.5" ng-change="setDefaultTimeOff()">
-                                <div class="hint">In hours</div>
-                            </md-input-container>
-                            <md-input-container>
-                                <label>Default Hours to work</label>
-                                <input ng-model="globalSettings.defaultHoursToWork" type="number" step="0.5" ng-change="setDefaultHoursToWork()">
-                                <div class="hint">In hours</div>
-                            </md-input-container>
+                            <div layout="row">
+                                <md-input-container class="small-input" flex md-no-float>
+                                    <label>Pause Time</label>
+                                    <input placeholder="0" type="number" step="1" ng-model="globalSettings.defaultTimeOff.hours" ng-change="setDefaultTimeOff()">
+                                    <div class="hint">Hours</div>
+                                </md-input-container>
+                                <md-input-container class="small-input" flex md-no-float>
+                                    <input placeholder="0" type="number" step="1" min="0" max="59" ng-model="globalSettings.defaultTimeOff.minutes" ng-change="setDefaultTimeOff()">
+                                    <div class="hint">Minutes</div>
+                                </md-input-container>
+                            </div>
+                            <div layout="row">
+                                <md-input-container class="small-input" flex md-no-float>
+                                    <label>Hours to work</label>
+                                    <input placeholder="0" type="number" step="1" ng-model="globalSettings.defaultHoursToWork.hours" ng-change="setDefaultHoursToWork()">
+                                    <div class="hint">Hours</div>
+                                </md-input-container>
+                                <md-input-container class="small-input" flex md-no-float>
+                                    <input placeholder="0" type="number" step="1" min="0" max="59" ng-model="globalSettings.defaultHoursToWork.minutes" ng-change="setDefaultHoursToWork()">
+                                    <div class="hint">Minutes</div>
+                                </md-input-container>
+                            </div>
                         </div>
                         <div class="md-subhead">Timesheet Hero v{{appVersion}}</div>
                         <div layout-gt-xs="row">

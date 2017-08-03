@@ -140,3 +140,7 @@ md-tooltip.md-panel.md-tooltip.md-default-theme, md-tooltip.md-panel.md-tooltip 
     background: #171717;
     color: #fafafa;
 }
+
+.displayed-week-input {
+    min-width: 200px;
+}
