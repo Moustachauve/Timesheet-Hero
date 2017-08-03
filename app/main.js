@@ -141,7 +141,7 @@ app.on('ready', function () {
     })
     autoUpdater.on('update-downloaded', (ev) => {
         console.log('Update downloaded');
-        windowManager.webContents.send('updateDownloaded', ev);
+        windowManager.sendToRenderer('updateDownloaded', ev);
     });
     
     lockedData.on('dataChange', function(date, data) {

@@ -69,7 +69,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     }
 
     $scope.hasNextWeek = false;
-    $scope.hasPreviousWeek = true;
+    $scope.hasPreviousWeek = false;
 
     $scope.datesAvailable = [];
 
@@ -89,9 +89,6 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
             processWeekInformation(null, data);
         });
     });
-
-    getAvailableDatesForCalendar();
-    startInterval();
 
     $scope.changePauseTime = function(key) {
         var hours = $scope.selectedDayDetails.pausePart.hours || 0;
@@ -197,10 +194,13 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
             stopInterval();
         }
 
-        var nextWeek = moment($scope.selectedWeek).add(1, 'week');
-        $scope.hasNextWeek = $scope.isDateSelectionnable(nextWeek);
-        var previousWeek = moment($scope.selectedWeek).add(-1, 'week');
-        $scope.hasPreviousWeek = $scope.isDateSelectionnable(previousWeek);
+        var allDates = Object.keys($scope.datesAvailable);
+        var oldestDate = moment(allDates[0]).startOf('isoWeek');
+        var mostRecentDate = moment(allDates[allDates.length - 1]).startOf('isoWeek');
+        var currentDate = moment(newDate).startOf('isoWeek');
+
+        $scope.hasNextWeek = !mostRecentDate.isSame(currentDate.startOf('isoWeek'), 'day');
+        $scope.hasPreviousWeek = !oldestDate.isSame(currentDate.startOf('isoWeek'), 'day');
 
         lockedData.load($scope.selectedWeek, function(err, data) {
             processWeekInformation(week, data);
@@ -558,7 +558,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
             }
 
             console.log('Received available dates for calendar.');
-            $scope.$apply();
+            $scope.setSelectedWeek();
         });
     }
 
@@ -646,6 +646,10 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     globalSettings.on('dataChange', function(date, data) {
         console.log('settings changed');
     });
+
+    // Start the UI!
+    getAvailableDatesForCalendar();
+    $scope.setSelectedWeek(moment());
 }]);
 
 app.filter('formatMomentTime', function() {
@@ -718,12 +722,6 @@ function DayDetailsController($scope, $mdDialog) {
     $scope.close = function() {
         $mdDialog.hide();
     };
-
-    $scope.isDateSelectionnable = function(date) {
-        //return $scope.datesAvailable.indexOf(date);
-        var day = moment(date);
-        return !!$scope.datesAvailable[day.format(DATE_FORMAT)];
-    }
 }
 
 /* WEEK PLAN */
