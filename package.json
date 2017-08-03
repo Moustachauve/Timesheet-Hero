@@ -4,7 +4,7 @@
   "description": "Helps you keep track of your time.",
   "author": "",
   "private": true,
-  "version": "1.2.5",
+  "version": "1.3.0",
   "build": {
     "appId": "ca.cgagnier.timesheethero",
     "artifactName": "${name}-setup-${version}.${ext}",
