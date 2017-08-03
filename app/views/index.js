@@ -529,7 +529,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
         if (!element.notified && element.total.corrected > (hoursToWorkToday * 60 * 60 * 1000)) {
           element.notified = true
           console.log('user worked ' + hoursToWorkToday + 'hrs today. Notifying...')
-          ipcRenderer.send('notify', '', 'You worked enough hours for today (' + hoursToWorkToday + 'h).')
+          ipcRenderer.send('notify', '', 'You worked enough hours for today (' + formatHours(hoursToWorkToday) + ').')
         }
       }
     }
