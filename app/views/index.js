@@ -15,7 +15,7 @@ const globalSettings = require('../lib/globalSettings');
 var titleBarDrag = drag('#titleBar');
 
 var oldConsoleLog = console.log;
-console.log = function() {
+/*console.log = function() {
     if(arguments && arguments[0]) {
         arguments[0] = '[renderer] ' + arguments[0];
     } else {
@@ -23,7 +23,7 @@ console.log = function() {
     }
 
     log.info(...arguments);
-}
+}*/
 
 const DATE_FORMAT = 'YYYY-MM-DD';
 
@@ -223,7 +223,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
                     time: $scope.weekPlan[dayPlan].time
                 }
             }
-            console.log('saving week plan');
+            //console.log('saving week plan');
             ipcRenderer.send('saveWeekPlan', $scope.selectedWeek.valueOf(), weekPlan);
         }, 500);
     }
@@ -603,10 +603,13 @@ app.filter('formatMomentTimeDurationMS', function() {
 });
 
 function formatHours(hours) {
-    if(hours) {
-        var momentTime = moment.duration(hours, 'hours');
-        var hours = momentTime.hours() + (momentTime.days() * 24);
-        return formatIntTwoDigits(hours) + ":" + formatIntTwoDigits(momentTime.minutes());
+    if(hours) {       
+        var minutes = hours % 1;
+        var hours = hours - minutes;
+        //console.log(minutes)
+        minutes = minutes * 60;
+        console.log(formatIntTwoDigits(minutes))
+        return formatIntTwoDigits(hours) + ":" + formatIntTwoDigits(minutes);
     }
     return '--:--';
 }
@@ -621,6 +624,7 @@ function formatIntTwoDigits(integer) {
     if(integer < 0) {
         return '00';
     }
+    integer = Math.round(integer);
     return ("0" + integer).slice(-2);
 }
 
