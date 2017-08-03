@@ -68,6 +68,9 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
         totalClass: 'not-done'
     }
 
+    $scope.hasNextWeek = false;
+    $scope.hasPreviousWeek = true;
+
     $scope.datesAvailable = [];
 
     var intervalRefresh;
@@ -194,6 +197,11 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
             stopInterval();
         }
 
+        var nextWeek = moment($scope.selectedWeek).add(1, 'week');
+        $scope.hasNextWeek = $scope.isDateSelectionnable(nextWeek);
+        var previousWeek = moment($scope.selectedWeek).add(-1, 'week');
+        $scope.hasPreviousWeek = $scope.isDateSelectionnable(previousWeek);
+
         lockedData.load($scope.selectedWeek, function(err, data) {
             processWeekInformation(week, data);
         });
@@ -271,6 +279,25 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
 
         ipcRenderer.send('checkForUpdates');
     };
+
+    $scope.showPreviousWeek = function() {
+        if($scope.hasPreviousWeek) {
+            var newWeek = moment($scope.selectedWeek).add(-1, 'week');
+            $scope.setSelectedWeek(newWeek);
+        }
+    }
+
+    $scope.showNextWeek = function() {
+        if($scope.hasNextWeek) {
+            var newWeek = moment($scope.selectedWeek).add(1, 'week');
+            $scope.setSelectedWeek(newWeek);
+        }
+    }
+
+    $scope.isDateSelectionnable = function(date) {
+        var day = moment(date);
+        return !!$scope.datesAvailable[day.format(DATE_FORMAT)];
+    }
 
     function startInterval() {
         stopInterval();
@@ -671,12 +698,6 @@ function SettingsController($scope, $mdDialog) {
     $scope.close = function() {
         $mdDialog.hide();
     };
-
-    $scope.isDateSelectionnable = function(date) {
-        //return $scope.datesAvailable.indexOf(date);
-        var day = moment(date);
-        return !!$scope.datesAvailable[day.format(DATE_FORMAT)];
-    }
 }
 
 /* UPDATE AVAILABLE */
@@ -688,12 +709,6 @@ function UpdateAvailableController($scope, $mdDialog) {
 
     $scope.confirm = function() {
         $mdDialog.hide();
-    }
-
-    $scope.isDateSelectionnable = function(date) {
-        //return $scope.datesAvailable.indexOf(date);
-        var day = moment(date);
-        return !!$scope.datesAvailable[day.format(DATE_FORMAT)];
     }
 }
 

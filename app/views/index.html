@@ -18,8 +18,19 @@
             </div>
             <md-toolbar>
                 <div class="md-toolbar-tools">
-                    <h1 flex md-truncate>Timesheet Hero - {{selectedWeek.format(dateFormat)}}</h1>
-                    <md-button class="md-icon-button md-accent md-hue-2" aria-label="New update available" ng-click="showUpdateDialog($event)" ng-if="isUpdateAvailable">
+                    <h1 flex md-truncate>
+                        Timesheet Hero 
+                        <md-button class="md-icon-button" aria-label="Change to previous week" ng-disabled="!hasPreviousWeek" ng-click="showPreviousWeek()" ng-mousedown="$event.stopPropagation();">
+                            <md-tooltip md-direction="bottom">Previous Week</md-tooltip>
+                            <i class="material-icons">keyboard_arrow_left</i>
+                        </md-button>
+                        {{selectedWeek.format(dateFormat)}}
+                        <md-button class="md-icon-button" aria-label="Change to next week" ng-disabled="!hasNextWeek" ng-click="showNextWeek()" ng-mousedown="$event.stopPropagation();">
+                            <md-tooltip md-direction="bottom">Next Week</md-tooltip>
+                            <i class="material-icons">keyboard_arrow_right</i>
+                        </md-button>
+                    </h1>
+                    <md-button class="md-icon-button md-accent md-hue-2" aria-label="New update available" ng-click="showUpdateDialog($event)" ng-if="isUpdateAvailable" ng-mousedown="$event.stopPropagation();">
                         <md-tooltip md-direction="bottom">A new update is ready to be installed</md-tooltip>
                         <i class="material-icons">announcement</i>
                     </md-button>
