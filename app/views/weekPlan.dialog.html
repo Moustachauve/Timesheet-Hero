@@ -12,8 +12,8 @@
 
     <md-dialog-content class="md-dialog-content" ng-cloak>
         <div layout="column" layout-align="space-between center">
-            <md-progress-linear ng-class="totalTime() > hoursToWork ? 'md-warn' : 'md-accent'" md-mode="determinate" value="{{(totalTime()/hoursToWork)*100}}"></md-progress-linear>
-            <h3 md-colors="{color: totalTime() > hoursToWork ? 'default-warn' : 'default-grey-50'}" >Total: {{totalTime() | formatHours}} of {{hoursToWork | formatHours}}</h3>
+            <md-progress-linear ng-class="totalTime() > hoursToWork.time ? 'md-warn' : 'md-accent'" md-mode="determinate" value="{{(totalTime()/hoursToWork.time)*100}}"></md-progress-linear>
+            <h3 md-colors="{color: totalTime() > hoursToWork.time ? 'default-warn' : 'default-grey-50'}" >Total: {{totalTime() | formatHours}} of {{hoursToWork.time | formatHours}}</h3>
 
             <div layout="row" layout-align="space-between center">
                 <md-slider-container class="week-plan-slider-container" ng-repeat="dayPlan in weekPlan">
