@@ -1,30 +1,29 @@
 'use strict'
 
-var edge = require('electron-edge');
+var edge = require('electron-edge')
 
-var sessionStateDetector = {};
-module.exports = sessionStateDetector;
+var sessionStateDetector = {}
+module.exports = sessionStateDetector
 
-var unsubscribeCsharpEvent;
+var unsubscribeCsharpEvent
 
-sessionStateDetector.startTracking = function(stateChangedCallback) {
-    csharpEventSessionSwitch({event_handler: function(data, b) {
-        var isSessionLocked = data == 'SessionLock';
-        stateChangedCallback(isSessionLocked);
-        
-    }}, function (err, unsubscribe) {
-        if(err) throw err;
-        unsubscribeCsharpEvent = unsubscribe;
-    });
+sessionStateDetector.startTracking = function (stateChangedCallback) {
+  csharpEventSessionSwitch({event_handler: function (data, b) {
+    var isSessionLocked = data === 'SessionLock'
+    stateChangedCallback(isSessionLocked)
+  }}, function (err, unsubscribe) {
+    if (err) throw err
+    unsubscribeCsharpEvent = unsubscribe
+  })
 }
 
-sessionStateDetector.stopTracking = function() {
-    if(unsubscribeCsharpEvent) {
-        unsubscribeCsharpEvent();
-    }
+sessionStateDetector.stopTracking = function () {
+  if (unsubscribeCsharpEvent) {
+    unsubscribeCsharpEvent()
+  }
 }
 
-var csharpEventSessionSwitch = edge.func(function() {/*
+var csharpEventSessionSwitch = edge.func(function () { /*
     async (dynamic input) =>
     {
         var eventHandler = new Microsoft.Win32.SessionSwitchEventHandler((object sender, Microsoft.Win32.SessionSwitchEventArgs e) => {
@@ -41,4 +40,4 @@ var csharpEventSessionSwitch = edge.func(function() {/*
             return null;
         });
     };
-*/});
+*/ })

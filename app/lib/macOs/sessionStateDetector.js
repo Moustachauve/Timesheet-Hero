@@ -1,12 +1,12 @@
 'use strict'
 
-var sessionStateDetector = {};
-module.exports = sessionStateDetector;
+var sessionStateDetector = {}
+module.exports = sessionStateDetector
 
-sessionStateDetector.startTracking = function(stateChangedCallback) {
-    //stateChangedCallback(bool);
+sessionStateDetector.startTracking = function (stateChangedCallback) {
+  // stateChangedCallback(bool);
 }
 
-sessionStateDetector.stopTracking = function() {
+sessionStateDetector.stopTracking = function () {
 
 }

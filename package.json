@@ -13,7 +13,9 @@
         {
           "from": "build/",
           "to": "./",
-          "filter": ["*.dll"]
+          "filter": [
+            "*.dll"
+          ]
         }
       ]
     }
@@ -28,10 +30,17 @@
   },
   "homepage": "https://github.com/Moustachauve/Timesheet-Helper#readme",
   "devDependencies": {
+    "electron": "^1.4.4",
     "electron-builder": "^19.7.1",
     "electron-squirrel-startup": "^1.0.0",
     "electron-winstaller": "^2.6.3",
-    "electron": "^1.4.4"
+    "eslint": "^4.3.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-friendly-formatter": "^3.0.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-node": "^5.1.1",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1"
   },
   "scripts": {
     "start": "./node_modules/.bin/electron app/.",
@@ -39,7 +48,9 @@
     "package": "electron-packager ./app --out=packaged --icon=app/icon.ico --overwrite --asar --win32metadata.ProductName=\"Timesheet Hero\"",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
-    "postinstall": "electron-builder install-app-deps"
+    "postinstall": "electron-builder install-app-deps",
+    "lint": "eslint --ext .js -f ./node_modules/eslint-friendly-formatter src",
+    "lint:fix": "eslint --ext .js -f ./node_modules/eslint-friendly-formatter --fix src"
   },
   "dependencies": {}
 }
