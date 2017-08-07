@@ -81,6 +81,8 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
   $scope.showUpdateNotAvailable = false
   var shouldShowUpdateDialog = true
 
+  $scope.isWindows = process.platform === 'win32'
+
   globalSettings.load(function (err, data) {
     if (err) { throw err }
     console.log('loaded global settings, loading locked data...')

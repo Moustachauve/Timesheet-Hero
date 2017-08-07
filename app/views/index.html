@@ -6,7 +6,8 @@
         
         <link rel="stylesheet" href="../node_modules/angular-material/angular-material.min.css"/>
         <link rel="stylesheet" href="../node_modules/md-pickers/dist/mdPickers.min.css"/>
-        <link rel="stylesheet" href="css/titlebarWin.css"/>
+        <link rel="stylesheet" href="css/titlebarWin.css" ng-if="isWindows"/>
+        <link rel="stylesheet" href="css/titlebarMac.css" ng-if="!isWindows"/>
         <link rel="stylesheet" href="css/style.css"/>
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
@@ -14,7 +15,7 @@
     </head>
     <body ng-cloak layout="column">
         <div id="titleBar">
-            <div class="titlebar" ng-dblclick="windowMaximize()" ng-include="'titlebarControlsWin.html'">
+            <div class="titlebar" ng-dblclick="windowMaximize()" ng-include="'titlebarControlsWin.html'" ng-if="isWindows">
             </div>
             <md-toolbar>
                 <div class="md-toolbar-tools">

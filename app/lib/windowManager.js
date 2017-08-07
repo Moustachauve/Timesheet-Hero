@@ -43,7 +43,9 @@ windowManager.createWindow = function () {
     y: mainWindowState.y,
     width: mainWindowState.width,
     height: mainWindowState.height,
-    isMaximized: mainWindowState.isMaximized
+    isMaximized: mainWindowState.isMaximized,
+    titleBarStyle: 'hiddenInset',
+    fullscreenable: false
   })
 
   windowManager.browserWindow.setMenu(null)
