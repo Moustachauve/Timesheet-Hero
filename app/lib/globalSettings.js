@@ -56,10 +56,14 @@ globalSettings.load = function (callback) {
       if (err && err.code === 'ENOENT') {
         return callback(null, {
           defaultTimeOff: 0.5,
-          defaultHoursToWork: 35
+          defaultHoursToWork: 35,
+          weekPlanMode: 'manual'
         })
       }
       jsonfile.readFile(filePath, function (err, data) {
+        if (!data.weekPlanMode) {
+          data.weekPlanMode = 'manual'
+        }
         return callback(err, data)
       })
     })
@@ -71,7 +75,8 @@ globalSettings.loadSync = function (callback) {
   var filePath = path.join(folder, filename)
   var settings = {
     defaultTimeOff: 0.5,
-    defaultHoursToWork: 35
+    defaultHoursToWork: 35,
+    weekPlanMode: 'manual'
   }
 
   try {

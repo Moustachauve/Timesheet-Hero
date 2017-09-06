@@ -14,13 +14,16 @@
         <div layout="column" layout-align="space-between center">
             <md-progress-linear ng-class="totalTime() > hoursToWork.time ? 'md-warn' : 'md-accent'" md-mode="determinate" value="{{(totalTime()/hoursToWork.time)*100}}"></md-progress-linear>
             <h3 md-colors="{color: totalTime() > hoursToWork.time ? 'default-warn' : 'default-grey-50'}" >Total: {{totalTime() | formatHours}} of {{hoursToWork.time | formatHours}}</h3>
-
+            <small ng-show="globalSettings.weekPlanMode === 'auto'">Your week plan is set to adjust automatically based on your hours left.</small>
             <div layout="row" layout-align="space-between center">
-                <md-slider-container class="week-plan-slider-container" ng-repeat="dayPlan in weekPlan">
-                    <h3>{{dayPlan.time | formatHours}}</h3>
-                    <md-slider ng-model="dayPlan.time" min="0" max="14" step="0.083333" class="md-accent" md-vertical md-range ng-change="saveWeekPlan()" aria-label="Time planned for {{dayPlan.date.format('dddd')}}" ></md-slider>
+                <div ng-repeat="dayPlan in weekPlan" class="weekplan-slider-container">
+                    <md-slider-container class="week-plan-slider-container" ng-disabled="globalSettings.weekPlanMode === 'auto'">
+                        <h3>{{dayPlan.time | formatHours}}</h3>
+                        <md-slider ng-model="dayPlan.time" min="0" max="14" step="0.083333" class="md-accent" md-vertical md-range ng-change="saveWeekPlan()" aria-label="Time planned for {{dayPlan.date.format('dddd')}}"></md-slider>
+                    </md-slider-container>
                     <h5>{{dayPlan.date.format('dddd')}}</h5>
-                </md-slider-container>
+                    <md-switch ng-model="dayPlan.useDay" ng-change="saveWeekPlan()" ng-show="globalSettings.weekPlanMode === 'auto'"></md-switch>
+                </div>
             </div>
         </div>
     </md-dialog-content>

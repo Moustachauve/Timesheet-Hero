@@ -1,4 +1,4 @@
-<md-dialog aria-label="Settings">
+<md-dialog aria-label="Settings" id="settings-dialog">
     <form ng-cloak>
         <md-toolbar>
             <div class="md-toolbar-tools">
@@ -21,12 +21,12 @@
                             </md-input-container>
 
                             <div layout="row">
-                                <md-input-container class="small-input" flex md-no-float>
+                                <md-input-container flex md-no-float>
                                     <label>Hours to Work</label>
                                     <input placeholder="0" type="number" step="1" ng-model="hoursToWork.hours" ng-change="setHoursToWork()">
                                     <div class="hint">Hours</div>
                                 </md-input-container>
-                                <md-input-container class="small-input" flex md-no-float>
+                                <md-input-container flex md-no-float>
                                     <input placeholder="0" type="number" step="1" min="0" max="59" ng-model="hoursToWork.minutes" ng-change="setHoursToWork()">
                                     <div class="hint">Minutes</div>
                                 </md-input-container>
@@ -39,35 +39,58 @@
                         <div class="md-subhead">Default Values</div>
                         <div layout-gt-xs="row">
                             <div layout="row">
-                                <md-input-container class="small-input" flex md-no-float>
+                                <md-input-container flex md-no-float>
                                     <label>Pause Time</label>
                                     <input placeholder="0" type="number" step="1" ng-model="globalSettings.defaultTimeOff.hours" ng-change="setDefaultTimeOff()">
                                     <div class="hint">Hours</div>
                                 </md-input-container>
-                                <md-input-container class="small-input" flex md-no-float>
+                                <md-input-container flex md-no-float>
                                     <input placeholder="0" type="number" step="1" min="0" max="59" ng-model="globalSettings.defaultTimeOff.minutes" ng-change="setDefaultTimeOff()">
                                     <div class="hint">Minutes</div>
                                 </md-input-container>
                             </div>
                             <div layout="row">
-                                <md-input-container class="small-input" flex md-no-float>
+                                <md-input-container flex md-no-float>
                                     <label>Hours to work</label>
                                     <input placeholder="0" type="number" step="1" ng-model="globalSettings.defaultHoursToWork.hours" ng-change="setDefaultHoursToWork()">
                                     <div class="hint">Hours</div>
                                 </md-input-container>
-                                <md-input-container class="small-input" flex md-no-float>
+                                <md-input-container flex md-no-float>
                                     <input placeholder="0" type="number" step="1" min="0" max="59" ng-model="globalSettings.defaultHoursToWork.minutes" ng-change="setDefaultHoursToWork()">
                                     <div class="hint">Minutes</div>
                                 </md-input-container>
                             </div>
                         </div>
+                        <div layout-gt-xs="row">
+                            <div layout="row">
+                                <md-input-container flex md-no-float class="wide-input">
+                                    <label>Week Plan Mode</label>
+                                    <md-select ng-model="globalSettings.weekPlanMode" ng-change="setWeekPlanMode()">
+                                        <md-option value="manual">Manual</md-option>
+                                        <md-option value="auto">Automatic</md-option>
+                                    </md-select>
+                                </md-input-container>
+                            </div>
+                        </div>
+                    </md-content>
+                </md-tab>
+                 <md-tab label="About Timesheet Hero">
+                    <md-content class="md-padding">
                         <div class="md-subhead">Timesheet Hero v{{appVersion}}</div>
                         <div layout-gt-xs="row">
                             <md-button class="md-raised md-primary" ng-click="checkForUpdates()" ng-disabled="checkingForUpdates">{{checkingForUpdates ? 'Checking...' : 'Check for updates'}}</md-button>
                         </div>
                         <span ng-if="showUpdateNotAvailable">You have the latest version installed!</span>
+                        <p>For more information about Timesheet Hero, visit the project's <a ng-click="openExternalLink('https://github.com/Moustachauve/Timesheet-Hero')">Github page</a>.</p>
+                        <p>You can submit any bugs or issue you find <a ng-click="openExternalLink('https://github.com/Moustachauve/Timesheet-Hero/issues')">on this page</a>.</p>
+                        <p>
+                            <small class="copyright">
+                                THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+                                IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+                            </small>
+                        </p>
                     </md-content>
-                </md-tab>
+                 </md-tab>
             </md-tabs>
         </md-dialog-content>
 

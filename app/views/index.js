@@ -1,12 +1,13 @@
 'use strict'
 
+/* global angular */
 require('angular')
 require('angular-material')
 require('angular-animate')
 require('angular-aria')
 require('md-pickers')
 const moment = require('moment')
-const {ipcRenderer, remote} = require('electron')
+const {ipcRenderer, remote, shell} = require('electron')
 const log = require('electron-log')
 const drag = require('electron-drag')
 const lockedData = require('../lib/lockedData')
@@ -228,6 +229,10 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     globalSettings.set('defaultHoursToWork', $scope.globalSettings.defaultHoursToWork.time)
   }
 
+  $scope.setWeekPlanMode = function (key) {
+    globalSettings.set('weekPlanMode', $scope.globalSettings.weekPlanMode)
+  }
+
   $scope.setDefaultTimeOff = function (key) {
     var hours = $scope.globalSettings.defaultTimeOff.hours || 0
     var minutes = +((($scope.globalSettings.defaultTimeOff.minutes || 0) / 60).toFixed(2))
@@ -242,8 +247,14 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     saveWeekPlanDebounce = setTimeout(function () {
       var weekPlan = {}
       for (var dayPlan in $scope.weekPlan) {
+        var useDay = $scope.weekPlan[dayPlan].time > 0
+        if ($scope.globalSettings.weekPlanMode === 'auto') {
+          useDay = $scope.weekPlan[dayPlan].useDay
+        }
+
         weekPlan[dayPlan] = {
-          time: $scope.weekPlan[dayPlan].time
+          time: $scope.weekPlan[dayPlan].time,
+          useDay: useDay
         }
       }
       console.log('saving week plan')
@@ -360,7 +371,6 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
       var day = returnValue.days[arrayKey]
       day.date = moment(currentDate)
       day.plan = $scope.weekPlan[arrayKey]
-      day.isHidden = day.plan.time === 0
       day.isOff = false
       day.time = { start: 0, stop: 0, total: 0 }
       day.notified = false
@@ -518,6 +528,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
             console.log('Starting a new week: ', element.date.format('MMMM Do YYYY, h:mm:ss a'))
             getAvailableDatesForCalendar()
             $scope.setSelectedWeek(moment())
+            startNewWeek()
           } else {
             console.log('reloading current week information')
             lockedData.load($scope.selectedWeek, function (err, data) {
@@ -526,6 +537,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
             })
           }
           previousDayToday = moment(element.date)
+          startNewDay()
         }
 
         if (!element.notified && element.total.corrected > (hoursToWorkToday * 60 * 60 * 1000)) {
@@ -535,6 +547,16 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
         }
       }
     }
+  }
+
+  function startNewDay () {
+    if ($scope.globalSettings.weekPlanMode === 'auto') {
+
+    }
+  }
+
+  function startNewWeek () {
+
   }
 
   function getAvailableDatesForCalendar () {
@@ -693,6 +715,10 @@ function formatIntTwoDigits (integer) {
 function SettingsController ($scope, $mdDialog) {
   $scope.close = function () {
     $mdDialog.hide()
+  }
+
+  $scope.openExternalLink = function (url) {
+    shell.openExternal(url)
   }
 }
 

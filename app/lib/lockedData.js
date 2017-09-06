@@ -262,7 +262,8 @@ function getDefaultWeekPlan (week, hoursToWork) {
   var currentDay = moment(week).startOf('isoWeek')
   for (var i = 0; i < 7; i++) {
     weekPlan[currentDay.format('YYYY-MM-DD')] = {
-      time: (i < 5 ? defaultDailyTime : 0)
+      time: (i < 5 ? defaultDailyTime : 0),
+      useDay: i < 5
     }
     currentDay.add(1, 'days')
   }

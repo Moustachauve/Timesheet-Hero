@@ -1,15 +1,25 @@
 @keyframes fadein {
     from {
-      opacity: 0;
+        opacity: 0;
     }
     to {
-      opacity: 1;
+        opacity: 1;
     }
-  }
+}
 
 body {
     overflow-y: hidden;
     animation: fadein 0.5s;
+}
+
+a {
+    color: #ffc107;
+    text-decoration: none;
+    cursor: pointer;
+}
+a:hover {
+    color: #c59502;
+    text-decoration: underline;
 }
 
 .titlebar {
@@ -143,4 +153,35 @@ md-tooltip.md-panel.md-tooltip.md-default-theme, md-tooltip.md-panel.md-tooltip 
 
 .displayed-week-input {
     min-width: 200px;
+}
+
+.copyright {
+    font-size: 10px;
+    opacity: 0.6;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.wide-input {
+    width: 220px;
+}
+
+@media (min-width: 960px) {
+    #settings-dialog {
+        min-width: 700px;
+    }
+}
+
+.weekplan-slider-container {
+    text-align: center;
+}
+
+.weekplan-slider-container h5 {
+    margin-bottom: 0;
+}
+
+.weekplan-slider-container md-switch > div {
+    margin: auto;
+}
+.weekplan-slider-container md-switch > div.md-label {
+    display: none;
 }
