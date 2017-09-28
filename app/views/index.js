@@ -245,6 +245,10 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     // setTimeout so we have some sort of debounce when sliding
     clearTimeout(saveWeekPlanDebounce)
     saveWeekPlanDebounce = setTimeout(function () {
+      if ($scope.globalSettings.weekPlanMode === 'auto') {
+        recalculateWeekPlan()
+      }
+
       var weekPlan = {}
       for (var dayPlan in $scope.weekPlan) {
         var useDay = $scope.weekPlan[dayPlan].time > 0
@@ -257,6 +261,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
           useDay: useDay
         }
       }
+
       console.log('saving week plan')
       ipcRenderer.send('saveWeekPlan', $scope.selectedWeek.valueOf(), weekPlan)
     }, 500)
@@ -424,6 +429,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
 
     $scope.processedData = returnValue
     calculateTotal()
+    recalculateWeekPlan()
     $scope.$apply()
   }
 
@@ -557,6 +563,42 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
 
   function startNewWeek () {
 
+  }
+
+  function recalculateWeekPlan () {
+    if ($scope.globalSettings.weekPlanMode !== 'auto') {
+      return
+    }
+    console.log('recalculating week plan')
+
+    var daysToSplit = {}
+    var daysToSplitCount = 0
+    var timeWorked = 0
+    for (var dayKey in $scope.weekPlan) {
+      if (!$scope.processedData.days[dayKey].isFuture && !$scope.processedData.days[dayKey].isToday) {
+        if ($scope.processedData.days[dayKey].total.corrected) {
+          timeWorked += $scope.processedData.days[dayKey].total.corrected
+          $scope.weekPlan[dayKey].time = ($scope.processedData.days[dayKey].total.corrected / 3600000)
+        } else {
+          $scope.weekPlan[dayKey].time = 0
+        }
+      } else {
+        if ($scope.weekPlan[dayKey].useDay) {
+          daysToSplit[dayKey] = true
+          daysToSplitCount++
+        } else {
+          $scope.weekPlan[dayKey].time = 0
+        }
+      }
+    }
+
+    if (daysToSplitCount > 0) {
+      var hrsToWorkInMs = ($scope.hoursToWork.time * 3600000) - timeWorked
+      var hrsByDay = (hrsToWorkInMs / daysToSplitCount) / 3600000
+      for (dayKey in daysToSplit) {
+        $scope.weekPlan[dayKey].time = hrsByDay
+      }
+    }
   }
 
   function getAvailableDatesForCalendar () {
