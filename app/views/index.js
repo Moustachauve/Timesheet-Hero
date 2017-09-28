@@ -622,7 +622,6 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
       }
 
       console.log('Received available dates for calendar.')
-      $scope.setSelectedWeek()
     })
   }
 
