@@ -739,6 +739,10 @@ app.filter('formatMomentTimeDurationMS', function () {
 function formatHours (hours) {
   if (hours) {
     var minutes = (hours % 1) * 60
+    if (minutes + 0.001 > 60) {
+      minutes = 0
+      hours += 1
+    }
     hours = Math.trunc(hours)
     return formatIntTwoDigits(hours) + ':' + formatIntTwoDigits(minutes)
   }
