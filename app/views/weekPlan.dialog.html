@@ -1,4 +1,3 @@
-<!--<div class="md-subhead">{{selectedDayDetails.key}}</div>-->
 <md-dialog aria-label="Day Details">
     <md-toolbar ng-cloak>
         <div class="md-toolbar-tools">
@@ -12,8 +11,8 @@
 
     <md-dialog-content class="md-dialog-content" ng-cloak>
         <div layout="column" layout-align="space-between center">
-            <md-progress-linear ng-class="totalTime() > hoursToWork.time ? 'md-warn' : 'md-accent'" md-mode="determinate" value="{{(totalTime()/hoursToWork.time)*100}}"></md-progress-linear>
-            <h3 md-colors="{color: totalTime() > hoursToWork.time ? 'default-warn' : 'default-grey-50'}" >Total: {{totalTime() | formatHours}} of {{hoursToWork.time | formatHours}}</h3>
+            <md-progress-linear ng-class="round(totalTime(), 2) > round(hoursToWork.time, 2) ? 'md-warn' : 'md-accent'" md-mode="determinate" value="{{(totalTime()/hoursToWork.time)*100}}"></md-progress-linear>
+            <h3 md-colors="{color: round(totalTime(), 2) > round(hoursToWork.time, 2) ? 'default-warn' : 'default-grey-50'}" >Total: {{totalTime() | formatHours}} of {{hoursToWork.time | formatHours}}</h3>
             <small ng-show="globalSettings.weekPlanMode === 'auto'">Your week plan is set to adjust automatically based on your hours left.</small>
             <div layout="row" layout-align="space-between center">
                 <div ng-repeat="dayPlan in weekPlan" class="weekplan-slider-container">

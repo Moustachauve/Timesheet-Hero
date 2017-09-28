@@ -210,6 +210,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     lockedData.load($scope.selectedWeek, function (err, data) {
       if (err) { throw err }
       processWeekInformation(week, data)
+      recalculateWeekPlan()
     })
   }
 
@@ -231,6 +232,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
 
   $scope.setWeekPlanMode = function (key) {
     globalSettings.set('weekPlanMode', $scope.globalSettings.weekPlanMode)
+    recalculateWeekPlan()
   }
 
   $scope.setDefaultTimeOff = function (key) {
@@ -312,6 +314,11 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
   $scope.isDateSelectionnable = function (date) {
     var day = moment(date)
     return !!$scope.datesAvailable[day.format(DATE_FORMAT)]
+  }
+
+  $scope.round = function (number, precision = 0) {
+    var multiplier = Math.pow(10, precision || 0)
+    return Math.round(number * multiplier) / multiplier
   }
 
   function startInterval () {
@@ -566,7 +573,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
   }
 
   function recalculateWeekPlan () {
-    if ($scope.globalSettings.weekPlanMode !== 'auto') {
+    if (!isCurrentWeekSelected || $scope.globalSettings.weekPlanMode !== 'auto') {
       return
     }
     console.log('recalculating week plan')
