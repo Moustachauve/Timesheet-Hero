@@ -232,7 +232,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
 
   $scope.setWeekPlanMode = function (key) {
     globalSettings.set('weekPlanMode', $scope.globalSettings.weekPlanMode)
-    recalculateWeekPlan()
+    $scope.saveWeekPlan()
   }
 
   $scope.setDefaultTimeOff = function (key) {
@@ -478,10 +478,14 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
         }
         if (element.plan.timeMS > 0) {
           element.total.percentWorked = (element.total.corrected / element.plan.timeMS) * 100
-          if (element.total.percentWorked >= 100) {
+          if (element.total.percentWorked >= 99.99) {
             element.total.percentWorkedClass = 'done'
             element.total.timeOver = element.total.corrected - element.plan.timeMS
             element.total.timeLeft = 0
+
+            if (element.total.timeOver < 0.01) {
+              element.total.timeOver = 0
+            }
           } else if (element.isToday) {
             element.total.percentWorkedClass = 'progressing'
             element.total.timeLeft = element.plan.timeMS - element.total.corrected
