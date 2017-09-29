@@ -567,17 +567,16 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
   }
 
   function startNewDay () {
-    if ($scope.globalSettings.weekPlanMode === 'auto') {
-
-    }
   }
 
   function startNewWeek () {
-
   }
 
   function recalculateWeekPlan () {
     if (!isCurrentWeekSelected || $scope.globalSettings.weekPlanMode !== 'auto') {
+      for (var day in $scope.weekPlan) {
+        $scope.weekPlan[day].useDay = $scope.weekPlan[day].time > 0
+      }
       return
     }
     console.log('recalculating week plan')
