@@ -335,8 +335,9 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
         if (!$scope.processedData.days[today.format($scope.dateFormat)]) {
           console.log('Current day is not in processed days. Reloading proccessed days...')
           console.log('This is probably because we changed week')
-          getAvailableDatesForCalendar()
-          $scope.setSelectedWeek(moment())
+          getAvailableDatesForCalendar(function () {
+            $scope.setSelectedWeek(moment())
+          })
           return
         }
         calculateTotal()
@@ -547,18 +548,21 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
           // We are starting a new week!!
           if (previousDayToday.isoWeek() !== element.date.isoWeek()) {
             console.log('Starting a new week: ', element.date.format('MMMM Do YYYY, h:mm:ss a'))
-            getAvailableDatesForCalendar()
-            $scope.setSelectedWeek(moment())
-            startNewWeek()
+            getAvailableDatesForCalendar(function () {
+              $scope.setSelectedWeek(moment())
+              startNewWeek()
+              previousDayToday = moment(element.date)
+              startNewDay()
+            })
           } else {
             console.log('reloading current week information')
             lockedData.load($scope.selectedWeek, function (err, data) {
               if (err) { throw err }
               processWeekInformation(null, data)
             })
+            previousDayToday = moment(element.date)
+            startNewDay()
           }
-          previousDayToday = moment(element.date)
-          startNewDay()
         }
 
         if (!element.notified && element.total.corrected > (hoursToWorkToday * 60 * 60 * 1000)) {
@@ -615,7 +619,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     }
   }
 
-  function getAvailableDatesForCalendar () {
+  function getAvailableDatesForCalendar (callback) {
     console.log('Getting available dates for calendar...')
     lockedData.getAvailableDates(function (err, dates) {
       if (err) { throw err }
@@ -629,6 +633,10 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
       }
 
       console.log('Received available dates for calendar.')
+
+      if (callback) {
+        callback()
+      }
     })
   }
 
@@ -718,8 +726,9 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
   })
 
   // Start the UI!
-  getAvailableDatesForCalendar()
-  $scope.setSelectedWeek(moment())
+  getAvailableDatesForCalendar(function () {
+    $scope.setSelectedWeek(moment())
+  })
 }])
 
 app.filter('formatMomentTime', function () {
