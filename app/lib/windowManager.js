@@ -81,6 +81,13 @@ windowManager.closeWindow = function () {
   }
 }
 
+windowManager.destroyWindow = function () {
+  if (windowManager.isWindowCreated()) {
+    windowManager.browserWindow.destroy()
+    windowManager.browserWindow = null
+  }
+}
+
 windowManager.sendToRenderer = function (channel, ...args) {
   if (windowManager.isWindowCreated()) {
     windowManager.browserWindow.webContents.send(channel, ...args)

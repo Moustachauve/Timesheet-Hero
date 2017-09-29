@@ -79,6 +79,7 @@
                         <div class="md-subhead">Timesheet Hero v{{appVersion}}</div>
                         <div layout-gt-xs="row">
                             <md-button class="md-raised md-primary" ng-click="checkForUpdates()" ng-disabled="checkingForUpdates">{{checkingForUpdates ? 'Checking...' : 'Check for updates'}}</md-button>
+                            <md-button class="md-raised md-warn md-hue-1" ng-click="resetUI()">Reset Interface</md-button>
                         </div>
                         <span ng-if="showUpdateNotAvailable">You have the latest version installed!</span>
                         <p>For more information about Timesheet Hero, visit the project's <a ng-click="openExternalLink('https://github.com/Moustachauve/Timesheet-Hero')">Github page</a>.</p>

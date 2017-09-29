@@ -220,6 +220,12 @@ app.on('ready', function () {
     autoUpdater.checkForUpdates()
   })
 
+  ipcMain.on('resetUI', (event) => {
+    console.log('Reseting UI as per user request')
+    windowManager.destroyWindow()
+    windowManager.createWindow()
+  })
+
   ipcMain.on('installUpdate', (event, title, content) => {
     console.log('restarting...')
     autoUpdater.quitAndInstall()
