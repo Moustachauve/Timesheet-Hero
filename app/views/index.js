@@ -584,8 +584,6 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     notifiedForWeekDone = false
   }
 
-  $scope.recalculateWeekPlan = function () { recalculateWeekPlan() }
-
   function recalculateWeekPlan () {
     if (!isCurrentWeekSelected || $scope.globalSettings.weekPlanMode !== 'auto') {
       for (var day in $scope.weekPlan) {
