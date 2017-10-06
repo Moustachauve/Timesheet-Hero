@@ -20,7 +20,7 @@
             <md-toolbar>
                 <div class="md-toolbar-tools">
                     <h1 flex md-truncate>
-                        Timesheet Hero 
+                        Timesheet Hero <md-button ng-click="recalculateWeekPlan()">Click</md-button>
                         <md-button class="md-icon-button" aria-label="Change to previous week" ng-disabled="!hasPreviousWeek" ng-click="showPreviousWeek()" ng-mousedown="$event.stopPropagation();">
                             <md-tooltip md-direction="bottom">Previous Week</md-tooltip>
                             <i class="material-icons">keyboard_arrow_left</i>
@@ -125,7 +125,7 @@
                                 <span ng-if="day.total.percentWorkedClass === 'done' && day.total.timeOver == 0">Good job, cowboy!</span>
                                 <span ng-if="day.total.percentWorkedClass === 'done' && day.total.timeOver > 0">{{day.total.timeOver | formatMomentTimeDurationMS}} over</span>
                                 <span ng-if="day.total.percentWorkedClass !== 'done'">{{day.total.timeLeft | formatMomentTimeDurationMS}} left</span>
-                                <span ng-if="day.isToday">(Done at {{day.total.timeToLeave | formatMomentTime}})</span><br>aa
+                                <span ng-if="day.isToday">(Done at {{day.total.timeToLeave | formatMomentTime}})</span>
                             </md-tooltip>
                         </div>
                     </md-card>

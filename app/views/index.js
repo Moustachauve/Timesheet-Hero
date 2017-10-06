@@ -77,6 +77,9 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
   var intervalRefresh
   var saveWeekPlanDebounce
 
+  var notifiedForDayDone = false
+  var notifiedForWeekDone = false
+
   $scope.isUpdateAvailable = false
   $scope.checkingForUpdates = false
   $scope.showUpdateNotAvailable = false
@@ -266,7 +269,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
 
       console.log('saving week plan')
       ipcRenderer.send('saveWeekPlan', $scope.selectedWeek.valueOf(), weekPlan)
-    }, 500)
+    }, 350)
   }
 
   $scope.showUpdateDialog = function () {
@@ -358,7 +361,6 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
       date = moment().startOf('isoWeek')
     }
     var returnValue = {
-      notified: false,
       days: {}
     }
 
@@ -390,7 +392,6 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
       day.plan = $scope.weekPlan[arrayKey]
       day.isOff = false
       day.time = { start: 0, stop: 0, total: 0 }
-      day.notified = false
       day.isToday = arrayKey === today
       day.isFuture = isFuture
       if (day.isToday) {
@@ -497,6 +498,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
             element.total.timeOver = 0
           }
         } else {
+          element.total.timeOver = 0
           element.total.percentWorked = 100
           element.total.percentWorkedClass = 'done'
         }
@@ -511,8 +513,8 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
 
     var timeLeft = moment.duration($scope.hoursToWork.time, 'hours').subtract($scope.totals.totalWeekly)
 
-    if (!$scope.processedData.notified && timeLeft.hours() >= $scope.hoursToWork.time) {
-      $scope.processedData.notified = true
+    if (!notifiedForWeekDone && timeLeft.hours() >= $scope.hoursToWork.time) {
+      notifiedForDayDone = true
       ipcRenderer.send('notify', '', 'You worked enough hours for the week.')
     }
 
@@ -565,8 +567,8 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
           }
         }
 
-        if (!element.notified && element.total.corrected > (hoursToWorkToday * 60 * 60 * 1000)) {
-          element.notified = true
+        if (!notifiedForDayDone && element.total.corrected > (hoursToWorkToday * 60 * 60 * 1000)) {
+          notifiedForDayDone = true
           console.log('user worked ' + hoursToWorkToday + 'hrs today. Notifying...')
           ipcRenderer.send('notify', '', 'You worked enough hours for today (' + formatHours(hoursToWorkToday) + ').')
         }
@@ -575,10 +577,14 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
   }
 
   function startNewDay () {
+    notifiedForDayDone = false
   }
 
   function startNewWeek () {
+    notifiedForWeekDone = false
   }
+
+  $scope.recalculateWeekPlan = function () { recalculateWeekPlan() }
 
   function recalculateWeekPlan () {
     if (!isCurrentWeekSelected || $scope.globalSettings.weekPlanMode !== 'auto') {
@@ -594,7 +600,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
     var timeWorked = 0
     for (var dayKey in $scope.weekPlan) {
       if (!$scope.processedData.days[dayKey].isFuture && !$scope.processedData.days[dayKey].isToday) {
-        if ($scope.processedData.days[dayKey].total.corrected) {
+        if ($scope.weekPlan[dayKey].useDay && $scope.processedData.days[dayKey].total.corrected) {
           timeWorked += $scope.processedData.days[dayKey].total.corrected
           $scope.weekPlan[dayKey].time = ($scope.processedData.days[dayKey].total.corrected / 3600000)
         } else {
