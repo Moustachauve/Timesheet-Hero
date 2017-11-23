@@ -32,7 +32,7 @@ let logMidnightLockData = function logMidnightLockData(){
     return ;
   }
 
-  let yesterdayVeryLate = moment().subtract(1, "day").endOf('day')
+  let yesterdayVeryLate = moment().subtract(1, 'day').endOf('day')
 
   // Flag the computer as locked yesterday at midnight
   lockedData.addData(true, yesterdayVeryLate, function(err, res){
