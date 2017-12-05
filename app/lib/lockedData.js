@@ -1,24 +1,57 @@
 'use strict'
 
-var jsonfile = require('jsonfile')
-var moment = require('moment')
-var fs = require('fs')
-var path = require('path')
-var mkdirp = require('mkdirp')
-var EventEmitter = require('events').EventEmitter
-var os = require('os')
+const jsonfile = require('jsonfile')
+const moment = require('moment')
+const fs = require('fs')
+const path = require('path')
+const mkdirp = require('mkdirp')
+const EventEmitter = require('events').EventEmitter
+const os = require('os')
 const isDev = require('electron-is-dev')
 
-var globalSettings = require('./globalSettings')
+const globalSettings = require('./globalSettings')
 
-var lockedData = new EventEmitter()
+const lockedData = new EventEmitter()
+lockedData.isLocked = false
+
 module.exports = lockedData
 
-var folder = path.join(os.homedir(), 'timesheet-hero/dates')
+const folder = path.join(os.homedir(), 'timesheet-hero/dates')
+
+
+let getMillisecondsUntilMidnight = function getMillisecondsUntilMidnight(){
+  let now = moment();
+  let midnight = moment().endOf('day');
+  return Math.abs(midnight.diff(now, 'milliseconds'));
+}
+
+let logMidnightLockData = function logMidnightLockData(){
+  setTimeout(logMidnightLockData, 24 * 3600 * 1000) // Call myself 24 hours from now on.
+  if(lockedData.isLocked){
+    // When the computer is locked at midnight, do nothing.
+    return ;
+  }
+
+  let yesterdayVeryLate = moment().subtract(1, 'day').endOf('day')
+
+  // Flag the computer as locked yesterday at midnight
+  lockedData.addData(true, yesterdayVeryLate, function(err, res){
+    // Flag the computer as unlocked today at 00:00:00
+    let lastNight = moment().startOf('day')
+    lockedData.addData(false, lastNight, function(err, res){
+        return ;
+    })
+  })
+
+}
+// Call the midnight monitor at midnight.
+setTimeout(logMidnightLockData, getMillisecondsUntilMidnight())
 
 lockedData.addData = function (isLocked, date, callback) {
   if (!date) {
     date = moment()
+    // Save the actual status, to be used at midnight.
+    lockedData.isLocked = isLocked
   }
 
   getFilePath(date, function (err, filePath) {
@@ -194,6 +227,7 @@ lockedData.load = function (date, callback) {
     if (err) { return callback(err) }
 
     fs.access(filePath, function (err) {
+
       if (err && err.code === 'ENOENT') {
         console.log('Creating new file with name: ', getFileName(date))
         globalSettings.get('defaultHoursToWork', function (err, defaultHoursToWork) {
@@ -210,6 +244,7 @@ lockedData.load = function (date, callback) {
       }
 
       jsonfile.readFile(filePath, function (err, data) {
+
         if (!data.weekPlan) {
           data.weekPlan = getDefaultWeekPlan(date, data.hoursToWork)
         }
