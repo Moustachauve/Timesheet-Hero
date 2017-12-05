@@ -21,7 +21,8 @@
     "mkdirp": "^0.5.1",
     "moment": "^2.18.1",
     "node-notifier": "^5.1.2",
-    "node-osascript": "^2.0.0"
+    "node-osascript": "^2.0.0",
+    "osx-quartz": "^1.0.0"
   },
   "scripts": {
     "start": "electron ."
