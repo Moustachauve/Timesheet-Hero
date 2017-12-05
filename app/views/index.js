@@ -9,11 +9,8 @@ require('md-pickers')
 const moment = require('moment')
 const {ipcRenderer, remote, shell} = require('electron')
 const log = require('electron-log')
-const drag = require('electron-drag')
 const lockedData = require('../lib/lockedData')
 const globalSettings = require('../lib/globalSettings')
-
-var titleBarDrag = drag('#titleBar')
 
 // var oldConsoleLog = console.log
 console.log = function (...args) {
@@ -717,12 +714,10 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
 
   ipcRenderer.on('windowMaximize', function () {
     $scope.isWindowMaximized = true
-    titleBarDrag()
   })
 
   ipcRenderer.on('windowUnmaximize', function () {
     $scope.isWindowMaximized = false
-    titleBarDrag = drag('#titleBar')
   })
 
   globalSettings.on('dataChange', function (date, data) {

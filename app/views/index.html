@@ -15,36 +15,38 @@
     </head>
     <body ng-cloak layout="column">
         <div id="titleBar">
-            <div class="titlebar" ng-dblclick="windowMaximize()" ng-include="'titlebarControlsWin.html'" ng-if="isWindows">
-            </div>
-            <md-toolbar>
-                <div class="md-toolbar-tools">
-                    <h1 flex md-truncate>
-                        Timesheet Hero
-                        <md-button class="md-icon-button" aria-label="Change to previous week" ng-disabled="!hasPreviousWeek" ng-click="showPreviousWeek()" ng-mousedown="$event.stopPropagation();">
-                            <md-tooltip md-direction="bottom">Previous Week</md-tooltip>
-                            <i class="material-icons">keyboard_arrow_left</i>
-                        </md-button>
-                        {{selectedWeek.format(dateFormat)}}
-                        <md-button class="md-icon-button" aria-label="Change to next week" ng-disabled="!hasNextWeek" ng-click="showNextWeek()" ng-mousedown="$event.stopPropagation();">
-                            <md-tooltip md-direction="bottom">Next Week</md-tooltip>
-                            <i class="material-icons">keyboard_arrow_right</i>
-                        </md-button>
-                    </h1>
-                    <md-button class="md-icon-button md-accent md-hue-2" aria-label="New update available" ng-click="showUpdateDialog($event)" ng-if="isUpdateAvailable" ng-mousedown="$event.stopPropagation();">
-                        <md-tooltip md-direction="bottom">A new update is ready to be installed</md-tooltip>
-                        <i class="material-icons">announcement</i>
-                    </md-button>
-                    <md-button class="md-icon-button" aria-label="Week Planner" ng-click="showWeekPlan($event); $event.stopPropagation();" ng-mousedown="$event.stopPropagation();">
-                        <md-tooltip md-direction="bottom">Week Planner</md-tooltip>
-                        <i class="material-icons">tune</i>
-                    </md-button>
-                    <md-button class="md-icon-button" aria-label="Settings" ng-click="showSettings($event); $event.stopPropagation();" ng-mousedown="$event.stopPropagation();">
-                        <md-tooltip md-direction="bottom">Settings</md-tooltip>
-                        <i class="material-icons">settings</i>
-                    </md-button>
+            <div id="titlebar-drag">
+                <div class="titlebar" ng-dblclick="windowMaximize()" ng-include="'titlebarControlsWin.html'" ng-if="isWindows">
                 </div>
-            </md-toolbar>
+                <md-toolbar>
+                    <div class="md-toolbar-tools">
+                        <h1 flex md-truncate>
+                            Timesheet Hero
+                            <md-button class="md-icon-button draggable" aria-label="Change to previous week" ng-disabled="!hasPreviousWeek" ng-click="showPreviousWeek()">
+                                <md-tooltip md-direction="bottom">Previous Week</md-tooltip>
+                                <i class="material-icons">keyboard_arrow_left</i>
+                            </md-button>
+                            {{selectedWeek.format(dateFormat)}}
+                            <md-button class="md-icon-button draggable" aria-label="Change to next week" ng-disabled="!hasNextWeek" ng-click="showNextWeek()">
+                                <md-tooltip md-direction="bottom">Next Week</md-tooltip>
+                                <i class="material-icons">keyboard_arrow_right</i>
+                            </md-button>
+                        </h1>
+                        <md-button class="md-icon-button md-accent md-hue-2 draggable" aria-label="New update available" ng-click="showUpdateDialog($event)" ng-if="isUpdateAvailable">
+                            <md-tooltip md-direction="bottom">A new update is ready to be installed</md-tooltip>
+                            <i class="material-icons">announcement</i>
+                        </md-button>
+                        <md-button class="md-icon-button draggable" aria-label="Week Planner" ng-click="showWeekPlan($event); $event.stopPropagation();">
+                            <md-tooltip md-direction="bottom">Week Planner</md-tooltip>
+                            <i class="material-icons">tune</i>
+                        </md-button>
+                        <md-button class="md-icon-button draggable" aria-label="Settings" ng-click="showSettings($event); $event.stopPropagation();">
+                            <md-tooltip md-direction="bottom">Settings</md-tooltip>
+                            <i class="material-icons">settings</i>
+                        </md-button>
+                    </div>
+                </md-toolbar>
+            </div>
         </div>
 
         <md-content>

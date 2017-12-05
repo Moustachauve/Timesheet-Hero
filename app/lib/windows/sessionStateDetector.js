@@ -1,6 +1,6 @@
 'use strict'
 
-var edge = require('electron-edge')
+var edge = require('electron-edge-js')
 
 var sessionStateDetector = {}
 module.exports = sessionStateDetector

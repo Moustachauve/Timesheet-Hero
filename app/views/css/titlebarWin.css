@@ -1,9 +1,31 @@
+.titlebar, #titleBar {
+    padding: 0;
+    background: #ffc107;
+}
+
 .titlebar {
     display: block;
     position: relative;
     height: 32px;
-    padding: 0;
-    background: #ffc107;
+}
+
+#titlebar-drag {
+    -webkit-app-region: drag;
+}
+
+#titlebar-drag-handle {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    height: 4px;
+}
+#titlebar-drag-handle-left {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
 }
 
 .titlebar-controls {
@@ -32,9 +54,7 @@
     transition: background-color .2s;
 }
 
-.titlebar.draggable .titlebar-minimize,
-.titlebar.draggable .titlebar-resize,
-.titlebar.draggable .titlebar-close {
+#titlebar-drag .draggable {
     -webkit-app-region: no-drag;
 }
 

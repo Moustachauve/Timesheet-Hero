@@ -1,4 +1,4 @@
-<div class="titlebar-controls"  ng-mousedown="$event.stopPropagation();">
+<div class="titlebar-controls draggable"  ng-mousedown="$event.stopPropagation();">
     <div class="titlebar-minimize" ng-click="windowMinimize()">
         <svg x="0px" y="0px" viewBox="0 0 10 1">
             <rect fill="#000000" width="10" height="1"></rect>
@@ -23,3 +23,5 @@
         </svg>
     </div>
 </div>
+<div id="titlebar-drag-handle" class="draggable"></div>
+<div id="titlebar-drag-handle-left" class="draggable"></div>
