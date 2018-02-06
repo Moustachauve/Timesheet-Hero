@@ -217,7 +217,7 @@ app.on('ready', function () {
 
   ipcMain.on('checkForUpdates', (event, title) => {
     console.log('Checking for updates (manually)...')
-    autoUpdater.checkForUpdates()
+    checkForUpdates()
   })
 
   ipcMain.on('resetUI', (event) => {
@@ -247,11 +247,21 @@ app.on('ready', function () {
     windowManager.closeWindow()
   })
 
+  function checkForUpdates () {
+    try {
+      autoUpdater.checkForUpdates()
+    } catch (ex) {
+      console.log('Error while trying to check for updates:')
+      console.exception(ex)
+      windowManager.sendToRenderer('updateNotAvailable')
+    }
+  }
+
   // if(!isDev) {
-  autoUpdater.checkForUpdates()
+  checkForUpdates()
 
   setInterval(function () {
-    autoUpdater.checkForUpdates()
+    checkForUpdates()
   }, 21600000) // 6hrs
 
   // }

@@ -706,7 +706,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
   })
 
   ipcRenderer.on('updateNotAvailable', function (event, info) {
-    console.log('no updates available', info)
+    console.log('no updates available')
     $scope.isUpdateAvailable = false
     $scope.checkingForUpdates = false
     $scope.showUpdateNotAvailable = true
