@@ -555,6 +555,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
             })
           } else {
             console.log('reloading current week information')
+            $scope.saveWeekPlan()
             lockedData.load($scope.selectedWeek, function (err, data) {
               if (err) { throw err }
               processWeekInformation(null, data)

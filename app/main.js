@@ -204,6 +204,7 @@ app.on('ready', function () {
     var date = moment(dateMs)
     lockedData.saveWeekPlan(date, weekPlan, function (err) {
       if (err) { throw err }
+      console.log('Week plan changed')
     })
   })
 
