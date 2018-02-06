@@ -304,14 +304,18 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
   $scope.showPreviousWeek = function () {
     if ($scope.hasPreviousWeek) {
       var newWeek = moment($scope.selectedWeek).add(-1, 'week')
-      $scope.setSelectedWeek(newWeek)
+      getAvailableDatesForCalendar(function () {
+        $scope.setSelectedWeek(newWeek)
+      })
     }
   }
 
   $scope.showNextWeek = function () {
     if ($scope.hasNextWeek) {
       var newWeek = moment($scope.selectedWeek).add(1, 'week')
-      $scope.setSelectedWeek(newWeek)
+      getAvailableDatesForCalendar(function () {
+        $scope.setSelectedWeek(newWeek)
+      })
     }
   }
 
