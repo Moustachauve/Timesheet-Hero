@@ -9,7 +9,7 @@
     height: 32px;
 }
 
-#titlebar-drag {
+#titlebar-drag, .toolbar-drag {
     -webkit-app-region: drag;
 }
 
@@ -54,7 +54,7 @@
     transition: background-color .2s;
 }
 
-#titlebar-drag .draggable {
+#titlebar-drag .draggable, .md-button, md-backdrop {
     -webkit-app-region: no-drag;
 }
 
