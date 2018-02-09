@@ -10,3 +10,13 @@ To install this app, simply [click here](https://github.com/Moustachauve/Timeshe
 
 ## Screenshot
 # ![Screenshot 1](/docs/screenshot-1.png?raw=true)
+
+## Running the code
+To run the code, simply execute `npm start` from the root of the project.
+To Package the code in an executable, execute `npm run pack`.
+To create an installer, execute `npm run dist`.
+
+If the executable created by the package gives you an error related to a missing library for edge-cs.dll, follow these steps:
+1. In the app/node-modules folder, delete the `edge-cs` folder;
+2. Copy the `edge-asar-cs` folder and name the copy `edge-cs`;
+3. Repack the project and the executable should now work.
