@@ -60,6 +60,14 @@ windowManager.createWindow = function () {
   }
   mainWindowState.manage(windowManager.browserWindow)
 
+  windowManager.browserWindow.on('session-end', function () {
+    lockedData.addData(true, null, function (err, success) {
+      if (err) {
+        throw err
+      }
+    })
+  })
+
   windowManager.browserWindow.on('closed', function (event) {
     console.log('window is closed.')
     windowManager.browserWindow = null

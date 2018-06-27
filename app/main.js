@@ -51,6 +51,14 @@ app.on('activate', function () {
   windowManager.createWindow()
 })
 
+app.on('before-quit', function () {
+  lockedData.addData(true, null, function (err, success) {
+    if (err) {
+      throw err
+    }
+  })
+})
+
 var trayIcon
 var trayIconPath = ''
 
