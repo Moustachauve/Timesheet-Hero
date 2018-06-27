@@ -24,6 +24,8 @@ console.log = log.info
 autoUpdater.logger = log
 autoUpdater.logger.transports.file.level = 'info'
 
+autoUpdater.fullChangelog = true
+
 // prevent multiple instances
 var shouldQuit = app.makeSingleInstance(function (commandLine, workingDirectory) {
   if (windowManager) {
@@ -253,7 +255,7 @@ app.on('ready', function () {
       autoUpdater.checkForUpdates()
     } catch (ex) {
       console.log('Error while trying to check for updates:')
-      console.exception(ex)
+      console.error(ex)
       windowManager.sendToRenderer('updateNotAvailable')
     }
   }
