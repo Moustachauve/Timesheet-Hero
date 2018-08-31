@@ -185,3 +185,7 @@ md-tooltip.md-panel.md-tooltip.md-default-theme, md-tooltip.md-panel.md-tooltip 
 .weekplan-slider-container md-switch > div.md-label {
     display: none;
 }
+
+.flex-auto {
+    flex: 1 1;
+}
