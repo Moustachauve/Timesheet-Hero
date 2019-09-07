@@ -1,12 +1,12 @@
 'use strict'
 
-const APP_ID = 'ca.cgagnier.timesheethero';
+const APP_ID = 'ca.cgagnier.timesheethero'
 
 const path = require('path')
 const moment = require('moment')
 const log = require('electron-log')
-const {app, ipcMain, Menu, Tray, nativeImage} = require('electron')
-const {autoUpdater} = require('electron-updater')
+const { app, ipcMain, Menu, Tray, nativeImage } = require('electron')
+const { autoUpdater } = require('electron-updater')
 const isDev = require('electron-is-dev')
 const mkdirp = require('mkdirp')
 const timeTracker = new (require('./lib/timeTracker'))()

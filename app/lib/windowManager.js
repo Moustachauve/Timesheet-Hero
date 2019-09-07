@@ -6,6 +6,7 @@ const path = require('path')
 const url = require('url')
 const isDev = require('electron-is-dev')
 const windowStateKeeper = require('electron-window-state')
+const lockedData = require('./lockedData')
 var EventEmitter = require('events').EventEmitter
 var windowIconPath = ''
 

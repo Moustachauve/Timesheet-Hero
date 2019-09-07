@@ -91,7 +91,7 @@ function saveData (data, callback) {
   getFilePath(function (err, filePath) {
     if (err) { return callback(err) }
 
-    jsonfile.writeFile(filePath, data, {spaces: 2}, function (err) {
+    jsonfile.writeFile(filePath, data, { spaces: 2 }, function (err) {
       if (err) { return callback(err) }
       globalSettings.emit('dataChange', data)
       return callback()

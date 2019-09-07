@@ -7,7 +7,7 @@ require('angular-animate')
 require('angular-aria')
 require('md-pickers')
 const moment = require('moment')
-const {ipcRenderer, remote, shell} = require('electron')
+const { ipcRenderer, remote, shell } = require('electron')
 const log = require('electron-log')
 const lockedData = require('../lib/lockedData')
 const globalSettings = require('../lib/globalSettings')
@@ -56,7 +56,7 @@ app.controller('indexController', ['$scope', '$interval', '$mdDialog', '$mdToast
 
   $scope.selectedWeekCalendar = $scope.selectedWeek = moment().startOf('isoWeek')
   $scope.weekDays = []
-  $scope.hoursToWork = {time: 0, hours: 0, minutes: 0}
+  $scope.hoursToWork = { time: 0, hours: 0, minutes: 0 }
   $scope.processedData = {}
   $scope.weekPlan = []
   $scope.totals = {

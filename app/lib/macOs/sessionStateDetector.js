@@ -1,19 +1,18 @@
 'use strict'
 const quartz = require('osx-quartz') // https://www.npmjs.com/package/osx-quartz
-      , sessionStateDetector = {}
+const sessionStateDetector = {}
 
-let previousLockStatus = true;
+let previousLockStatus = true
 
 module.exports = sessionStateDetector
 
 sessionStateDetector.startTracking = function (stateChangedCallback) {
-
-  let monitorLockState = () => {
-    let actualLockStatus = quartz.isScreenLocked();
-    if(actualLockStatus != previousLockStatus) {
+  const monitorLockState = () => {
+    const actualLockStatus = quartz.isScreenLocked()
+    if (actualLockStatus !== previousLockStatus) {
       // Upon a change, call the callback
-      previousLockStatus = actualLockStatus;
-      stateChangedCallback(previousLockStatus);
+      previousLockStatus = actualLockStatus
+      stateChangedCallback(previousLockStatus)
     }
   }
 
