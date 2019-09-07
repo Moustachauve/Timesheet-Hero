@@ -1,5 +1,7 @@
 'use strict'
 
+const APP_ID = 'ca.cgagnier.timesheethero';
+
 const path = require('path')
 const moment = require('moment')
 const log = require('electron-log')
@@ -32,6 +34,8 @@ var shouldQuit = app.makeSingleInstance(function (commandLine, workingDirectory)
     windowManager.createWindow()
   }
 })
+
+app.setAppUserModelId(APP_ID)
 
 if (shouldQuit) {
   console.log('App is already running...')
@@ -167,7 +171,8 @@ app.on('ready', function () {
         notifier.notify({
           title: 'Timesheet Hero',
           message: 'The app is still running in the background.',
-          icon: trayIconPath
+          icon: trayIconPath,
+          appID: APP_ID
         })
 
         firstTimeClosing = false
@@ -222,7 +227,8 @@ app.on('ready', function () {
     notifier.notify({
       title: title || 'Timesheet Hero',
       message: content,
-      icon: trayIconPath
+      icon: trayIconPath,
+      appID: APP_ID
     })
   })
 
