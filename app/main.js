@@ -215,6 +215,13 @@ app.on('ready', function () {
     })
   })
 
+  ipcMain.on('resetOverrideTime', (event, dateMs) => {
+    var date = moment(dateMs)
+    lockedData.resetOverrideTime(date, function (err) {
+      if (err) { throw err }
+    })
+  })
+
   ipcMain.on('saveWeekPlan', (event, dateMs, weekPlan) => {
     var date = moment(dateMs)
     lockedData.saveWeekPlan(date, weekPlan, function (err) {

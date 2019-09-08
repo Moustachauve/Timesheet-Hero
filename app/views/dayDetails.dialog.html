@@ -30,18 +30,29 @@
                 </md-switch>
             </div>
 
-            <div class="md-subhead">Override Time</div>
-            <div layout="row" layout-align="space-between center">
-                <md-input-container class="small-input" flex>
-                    <label>Start Time</label>
-                    <input type="text" ng-model="selectedDayDetails.day.overrideStartTime" readonly="readonly" mdp-time-picker mdp-auto-switch="true" ng-change="setOverrideStartTime(selectedDayDetails.key)">
-                    <div class="hint">Format: HH:MM</div>
-                </md-input-container>
-                <md-input-container class="small-input" flex>
+            <div class="md-subhead">
+                Override Time
+                <md-button ng-click="resetOverrideTime(selectedDayDetails.key)">
+                    Reset
+                </md-button>
+            </div>
+            <div layout="row" layout-align="space-between center" flex>
+
+                <mdp-time-picker 
+                    mdp-placeholder="Start Time"
+                    ng-model="selectedDayDetails.day.overrideStartTimeDate" 
+                    ng-change="setOverrideStartTime(selectedDayDetails.key)">
+                </mdp-time-picker>
+                <mdp-time-picker 
+                    mdp-placeholder="Stop Time"
+                    ng-model="selectedDayDetails.day.overrideStopTimeDate"
+                    ng-change="setOverrideStopTime(selectedDayDetails.key)">
+                </mdp-time-picker>
+                <!-- <md-input-container class="small-input" flex>
                     <label>Stop Time</label>
                     <input type="text" ng-model="selectedDayDetails.day.overrideStopTime" readonly="readonly" mdp-time-picker mdp-auto-switch="true" ng-change="setOverrideStopTime(selectedDayDetails.key)">
                     <div class="hint">Format: HH:MM</div>
-                </md-input-container>
+                </md-input-container> -->
             </div>
 
     </md-dialog-content>

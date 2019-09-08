@@ -168,6 +168,33 @@ lockedData.setOverrideStopTime = function (date, time, callback) {
   })
 }
 
+lockedData.resetOverrideTime = function (date, callback) {
+  if (!date) {
+    return callback(new Error('No date!'))
+  }
+
+  getFilePath(date, function (err, filePath) {
+    if (err) { return callback(err) }
+
+    lockedData.load(date, function (err, data) {
+      if (err) { return callback(err) }
+
+      var arrayKey = date.format('YYYY-MM-DD')
+      if (!data.dates[arrayKey]) {
+        data.dates[arrayKey] = getDefaultObject()
+      }
+
+      data.dates[arrayKey].overrideStartTime = null
+      data.dates[arrayKey].overrideStopTime = null
+
+      saveData(date, data, function (err) {
+        if (err) { return callback(err) }
+        return callback(null, true)
+      })
+    })
+  })
+}
+
 lockedData.saveWeekPlan = function (date, weekPlan, callback) {
   if (!date) {
     return callback(new Error('No date!'))
