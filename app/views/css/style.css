@@ -189,3 +189,7 @@ md-tooltip.md-panel.md-tooltip.md-default-theme, md-tooltip.md-panel.md-tooltip 
 .flex-auto {
     flex: 1 1;
 }
+
+md-card.mdp-clock {
+    background: rgb(66,66,66);
+}
