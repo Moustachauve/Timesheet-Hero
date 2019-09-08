@@ -19,12 +19,17 @@ module.exports = function () {
     sessionStateDetecor.stopTracking()
   }
 
-  function onStateChange (state) {
-    console.log('state changed: ', state)
-    lockedData.addData(state, null, function (err, success) {
+  function onStateChange (isLocked, isRemoteSession) {
+    console.log('state changed, locked: ', isLocked, 'remote:', isRemoteSession)
+    // Remote session handling is not yet implemented
+    // if (isRemoteSession) {
+      
+    // } else {
+    lockedData.addLockStateChanged(isLocked, null, function (err, success) {
       if (err) {
         throw err
       }
     })
+    // }
   }
 }

@@ -16,7 +16,7 @@ module.exports = lockedData
 
 var folder = path.join(os.homedir(), 'timesheet-hero/dates')
 
-lockedData.addData = function (isLocked, date, callback) {
+lockedData.addLockStateChanged = function (isLocked, date, callback) {
   if (!date) {
     date = moment()
   }

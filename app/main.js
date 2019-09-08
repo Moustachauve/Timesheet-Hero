@@ -56,7 +56,7 @@ app.on('activate', function () {
 })
 
 app.on('before-quit', function () {
-  lockedData.addData(true, null, function (err, success) {
+  lockedData.addLockStateChanged(true, null, function (err, success) {
     if (err) {
       throw err
     }
@@ -100,7 +100,7 @@ app.on('ready', function () {
         timeTracker.stop()
         if (!isSaving && !isSavingDone) {
           isSaving = true
-          lockedData.addData(true, null, function (err, success) {
+          lockedData.addLockStateChanged(true, null, function (err, success) {
             if (err) {
               throw err
             }
@@ -120,7 +120,7 @@ app.on('ready', function () {
 
   // Save as unlocked when the app launch as we assume the computer is unlocked
   console.log('Saving unlock...')
-  lockedData.addData(false, null, function (err, success) {
+  lockedData.addLockStateChanged(false, null, function (err, success) {
     console.log('Creating the main window...')
     windowManager.createWindow()
 

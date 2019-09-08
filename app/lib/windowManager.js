@@ -62,7 +62,7 @@ windowManager.createWindow = function () {
   mainWindowState.manage(windowManager.browserWindow)
 
   windowManager.browserWindow.on('session-end', function () {
-    lockedData.addData(true, null, function (err, success) {
+    lockedData.addLockStateChanged(true, null, function (err, success) {
       if (err) {
         throw err
       }

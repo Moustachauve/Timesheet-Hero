@@ -12,7 +12,8 @@ sessionStateDetector.startTracking = function (stateChangedCallback) {
     event_handler: function (data, b) {
       console.log(data)
       var isSessionLocked = data.state === 'SessionLock'
-      stateChangedCallback(isSessionLocked)
+      var isRemoteSession = data.isRemoteSession
+      stateChangedCallback(isSessionLocked, isRemoteSession)
     }
   }, function (err, unsubscribe) {
     if (err) throw err
