@@ -41,12 +41,12 @@ md-input-container .hint {
     line-height: 14px;
     transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2);
     /* Set our own color */
-    color: grey; 
+    color: grey;
 }
 
 md-toolbar, #titleBar {
     -webkit-user-select: none;
-    user-select: none; 
+    user-select: none;
     cursor: default;
 }
 
@@ -140,15 +140,29 @@ md-progress-linear.done .md-container .md-bar {
 md-card md-card-title+md-card-content {
     padding-bottom: 6px;
 }
+
+.progress-no-tooltip {
+    width: 100%;
+    padding-top: 10px;
+}
+
 .progress-tooltip {
     width: 100%;
-    padding-top: 15px;
+    margin-top: -15px;
+}
+
+.progress-tooltip .material-icons {
+    font-size: 21px;
+    padding: 3px;
+    float:right;
 }
 
 md-tooltip.md-panel.md-tooltip.md-default-theme, md-tooltip.md-panel.md-tooltip {
-    margin-top: 10px;
+    margin-top: -2px;
     background: #171717;
     color: #fafafa;
+    opacity: 1;
+    font-weight: bold;
 }
 
 .displayed-week-input {
