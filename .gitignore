@@ -10,3 +10,6 @@ dist
 app/globalSettings.json
 app/data
 dist/*
+
+# idea stuff
+.idea
