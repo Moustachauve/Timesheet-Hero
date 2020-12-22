@@ -22,7 +22,7 @@
     "md-pickers": "^1.1.5",
     "mkdirp": "^0.5.1",
     "moment": "^2.24.0",
-    "node-notifier": "^5.4.3",
+    "node-notifier": "^8.0.1",
     "node-osascript": "^2.1.0",
     "osx-quartz": "^1.0.0"
   },
