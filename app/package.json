@@ -21,7 +21,7 @@
     "jsonfile": "^5.0.0",
     "md-pickers": "^1.1.5",
     "mkdirp": "^0.5.1",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "node-notifier": "^5.4.3",
     "node-osascript": "^2.1.0",
     "osx-quartz": "^1.0.0"
